@@ -341,6 +341,24 @@ export default function App(){
 
   const FormSection=({children,style={}})=><div style={{...glass({borderRadius:"20px"}),padding:"1.75rem",...style}}>{children}</div>;
 
+  const OLDropdown=()=>{
+    if(!olResults.length&&!olSearching) return null;
+    return(
+      <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
+        {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
+        {olResults.map((b,i)=>(
+          <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
+            style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
+            onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
+            onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+            {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
+            <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   // ── ONBOARD ──
   if(showOnboard)return(
     <div style={{...css.app,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh"}}>
@@ -627,12 +645,12 @@ export default function App(){
         {!isNextUp&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"14px",marginBottom:"2rem"}}>
             {[["Total Books",books.length,"#a78bfa","bookshelf"],["Finished",finished.length,"#34d399","finished"],["Reading Now",reading.length,"#f97316","bookshelf"]].map(([label,val,color,linkTo])=>(
-              <div key={label} onClick={()=>setView(linkTo)} style={{...glass({borderRadius:"20px"}),padding:"1.75rem 2rem",cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden"}}
+              <div key={label} onClick={()=>setView(linkTo)} style={{...glass({borderRadius:"20px"}),padding:"1.75rem 2rem",cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:"120px"}}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px ${color}40`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow=glass().boxShadow;}}>
                 <div style={{position:"absolute",top:"-30px",right:"-30px",width:"100px",height:"100px",borderRadius:"50%",background:color,opacity:0.12}}/>
-                <div style={{fontSize:"2.4rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 24px ${color}80`}}>{val}</div>
-                <div style={{fontSize:"0.9rem",color:"rgba(255,255,255,0.6)",marginTop:"0.4rem",fontWeight:600}}>{label}</div>
+                <div style={{fontSize:"3rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 24px ${color}80`}}>{val}</div>
+                <div style={{fontSize:"1rem",color:"rgba(255,255,255,0.7)",marginTop:"0.5rem",fontWeight:600}}>{label}</div>
               </div>
             ))}
           </div>
