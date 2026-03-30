@@ -350,6 +350,8 @@ export default function App(){
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
   const [authUser,setAuthUser]=useState(null);
   const [authLoading,setAuthLoading]=useState(true);
+  const [showScrollTop,setShowScrollTop]=useState(false);
+  const [statsFilter,setStatsFilter]=useState("all");
   const debRef=useRef(null);
 
   useEffect(()=>{
@@ -475,13 +477,6 @@ export default function App(){
     setNewGenreName("");showToast(`Added "${name}"!`);
   };
 
-  const finished=books.filter(b=>b.status==="Finished").sort((a,b)=>{
-    const da=a.date_read?new Date(a.date_read):new Date(a.created_at);
-    const db=b.date_read?new Date(b.date_read):new Date(b.created_at);
-    return db-da;
-  });
-  const [showScrollTop,setShowScrollTop]=useState(false);
-  const [statsFilter,setStatsFilter]=useState("all");
   useEffect(()=>{
     const onScroll=()=>setShowScrollTop(window.scrollY>400);
     window.addEventListener("scroll",onScroll);
