@@ -6,6 +6,56 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
+const AuthScreen=({onAuth})=>{
+  const [mode,setMode]=useState("login");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState("");
+  const [success,setSuccess]=useState("");
+
+  const handle=async()=>{
+    setError("");setSuccess("");setLoading(true);
+    if(mode==="login"){
+      const{error:e}=await supabase.auth.signInWithPassword({email,password});
+      if(e)setError(e.message);
+    } else if(mode==="signup"){
+      const{error:e}=await supabase.auth.signUp({email,password});
+      if(e)setError(e.message);
+      else setSuccess("Check your email to confirm your account, then log in!");
+    } else {
+      const{error:e}=await supabase.auth.resetPasswordForEmail(email);
+      if(e)setError(e.message);
+      else setSuccess("Password reset email sent!");
+    }
+    setLoading(false);
+  };
+
+  return(
+    <div style={{fontFamily:"'Segoe UI',sans-serif",minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{...glass({borderRadius:"28px"}),maxWidth:"420px",width:"90%",padding:"3rem",textAlign:"center"}}>
+        <SvgIcon path={ICONS.book} size={44} color="#c084fc"/>
+        <h2 style={{margin:"1rem 0 0.3rem",fontWeight:800,fontSize:"1.8rem",color:"#fff"}}>My Book Library</h2>
+        <p style={{color:"rgba(255,255,255,0.55)",marginBottom:"2rem",fontSize:"0.95rem"}}>
+          {mode==="login"?"Sign in to your library":mode==="signup"?"Create your library":"Reset your password"}
+        </p>
+        {error&&<div style={{background:"rgba(239,68,68,0.2)",border:"1px solid rgba(239,68,68,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#fca5a5",fontSize:"0.88rem"}}>{error}</div>}
+        {success&&<div style={{background:"rgba(16,185,129,0.2)",border:"1px solid rgba(16,185,129,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#6ee7b7",fontSize:"0.88rem"}}>{success}</div>}
+        <input style={{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",marginBottom:"0.75rem"}} placeholder="Email address" type="email" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>
+        {mode!=="reset"&&<input style={{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",marginBottom:"1.25rem"}} placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>}
+        <button style={{width:"100%",padding:"0.85rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"1rem",background:"rgba(255,255,255,0.95)",color:"#7c3aed",boxShadow:"0 4px 16px rgba(0,0,0,0.25)",marginBottom:"1.25rem"}} onClick={handle} disabled={loading}>
+          {loading?"...":{login:"Sign In",signup:"Create Account",reset:"Send Reset Email"}[mode]}
+        </button>
+        <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+          {mode==="login"&&<><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("signup");setError("");setSuccess("");}}>Don't have an account? Sign up</button><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"0.82rem"}} onClick={()=>{setMode("reset");setError("");setSuccess("");}}>Forgot password?</button></>}
+          {mode==="signup"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Already have an account? Sign in</button>}
+          {mode==="reset"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Back to sign in</button>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BUILT_IN_GENRES = [
   "Fiction","Non-Fiction","Fantasy","High Fantasy","Dark Fantasy","Romantasy",
   "Sci-Fi","Mystery","Thriller","Horror","Gothic Horror","Dark Gothic Romance",
@@ -298,15 +348,33 @@ export default function App(){
   const [statPeriod,setStatPeriod]=useState("month");
   const [newGenreName,setNewGenreName]=useState("");
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
+  const [authUser,setAuthUser]=useState(null);
+  const [authLoading,setAuthLoading]=useState(true);
   const debRef=useRef(null);
 
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      setAuthUser(session?.user??null);
+      setAuthLoading(false);
+    });
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      setAuthUser(session?.user??null);
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
+
+  if(authLoading) return <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:"1.1rem",fontFamily:"'Segoe UI',sans-serif"}}>Loading...</div>;
+  if(!authUser) return <AuthScreen/>;
+
+  const signOut=()=>supabase.auth.signOut();
   const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
 
   useEffect(()=>{
+    if(!authUser) return;
     const init=async()=>{
-      const {data:booksData}=await supabase.from("books").select("*").order("created_at",{ascending:false});
+      const {data:booksData}=await supabase.from("books").select("*").eq("user_id",authUser.id).order("created_at",{ascending:false});
       if(booksData) setBooks(booksData.map(b=>({...b,genres:b.genres||[],spineColor:b.spine_color})));
-      const {data:settingsData}=await supabase.from("settings").select("*");
+      const {data:settingsData}=await supabase.from("settings").select("*").eq("user_id",authUser.id);
       if(settingsData&&settingsData.length>0){
         const m=Object.fromEntries(settingsData.map(s=>[s.key,s.value]));
         if(m.theme) setTheme({...DEFAULTS,...m.theme});
@@ -317,9 +385,9 @@ export default function App(){
       } else setShowOnboard(true);
     };
     init();
-  },[]);
+  },[authUser]);
 
-  const saveSetting=async(key,value)=>{ await supabase.from("settings").upsert({key,value}); };
+  const saveSetting=async(key,value)=>{await supabase.from("settings").upsert({key,value,user_id:authUser.id});};
   const updTheme=t=>{setTheme(t);saveSetting("theme",t);};
   const updUser=u=>{setUser(u);saveSetting("user",u);};
   const updGenreIcons=m=>{setGenreIcons(m);saveSetting("genreIcons",m);};
@@ -379,7 +447,7 @@ export default function App(){
     const book={...form,id:isEdit?selected.id:Date.now().toString(),created_at:isEdit?selected.created_at:new Date().toISOString(),spineColor:isEdit?selected.spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]};
     if(isEdit){setBooks(books.map(b=>b.id===book.id?book:b));setSelected(book);showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);}
     else{setBooks([book,...books]);showToast("Book added!");setForm(emptyForm);setView(addingTo);}
-    await supabase.from("books").upsert({id:book.id,title:book.title,author:book.author,genres:book.genres,status:book.status,rating:book.rating||null,notes:book.notes,date_read:book.date_read||null,cover_url:book.cover_url,pages:book.pages?parseInt(book.pages):null,spine_color:book.spineColor,created_at:book.created_at});
+    await supabase.from("books").upsert({id:book.id,title:book.title,author:book.author,genres:book.genres,status:book.status,rating:book.rating||null,notes:book.notes,date_read:book.date_read||null,cover_url:book.cover_url,pages:book.pages?parseInt(book.pages):null,spine_color:book.spineColor,created_at:book.created_at,user_id:authUser.id});
   };
 
   const markFinished=async book=>{
@@ -387,7 +455,7 @@ export default function App(){
     const updated={...book,status:"Finished",date_read:book.date_read||today};
     setBooks(books.map(b=>b.id===book.id?updated:b));
     showToast(`"${book.title}" marked as finished!`);
-    await supabase.from("books").upsert({id:updated.id,title:updated.title,author:updated.author,genres:updated.genres,status:updated.status,rating:updated.rating||null,notes:updated.notes,date_read:updated.date_read||null,cover_url:updated.cover_url,pages:updated.pages?parseInt(updated.pages):null,spine_color:updated.spineColor,created_at:updated.created_at});
+    await supabase.from("books").upsert({id:updated.id,title:updated.title,author:updated.author,genres:updated.genres,status:updated.status,rating:updated.rating||null,notes:updated.notes,date_read:updated.date_read||null,cover_url:updated.cover_url,pages:updated.pages?parseInt(updated.pages):null,spine_color:updated.spineColor,created_at:updated.created_at,user_id:authUser.id});
   };
 
   const deleteBook=async id=>{
@@ -455,7 +523,9 @@ export default function App(){
   const Hdr=({backTo})=>(
     <div style={css.hdr}>
       <span style={css.logo}>{user.name?`${user.name}'s Library`:"My Library"}</span>
-      {backTo?<button style={css.pill(false)} onClick={()=>{setView(backTo);setAiResult("");}}><SvgIcon path={ICONS.back} size={14} color="rgba(255,255,255,0.85)"/>Back</button>:<NavTabs/>}
+      {backTo
+        ?<button style={css.pill(false)} onClick={()=>{setView(backTo);setAiResult("");}}><SvgIcon path={ICONS.back} size={14} color="rgba(255,255,255,0.85)"/>Back</button>
+        :<div style={{display:"flex",alignItems:"center",gap:"8px"}}><NavTabs/><button style={{...css.pill(false),fontSize:"0.78rem",padding:"0.4rem 0.85rem"}} onClick={signOut}>Sign Out</button></div>}
     </div>
   );
 
