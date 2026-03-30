@@ -190,8 +190,9 @@ const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,sea
       <div style={{marginBottom:"1.25rem"}}>
         <label style={lbl}>Book Title</label>
         <div style={{position:"relative"}}>
-          <input style={inp()} placeholder="Search for a book..." value={form.title}
-            onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}/>
+          <input style={inp()} placeholder="Search for a book, or type manually..." value={form.title}
+            onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}
+            onBlur={()=>setTimeout(()=>setOlResults([]),200)}/>
           {(olResults.length>0||olSearching)&&(
             <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
               {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
@@ -412,6 +413,13 @@ export default function App(){
     const db=b.date_read?new Date(b.date_read):new Date(b.created_at);
     return db-da;
   });
+  const [showScrollTop,setShowScrollTop]=useState(false);
+  const [statsFilter,setStatsFilter]=useState("all");
+  useEffect(()=>{
+    const onScroll=()=>setShowScrollTop(window.scrollY>400);
+    window.addEventListener("scroll",onScroll);
+    return()=>window.removeEventListener("scroll",onScroll);
+  },[]);
   const reading=books.filter(b=>b.status==="Currently Reading");
   const nextUp=books.filter(b=>b.status==="Want to Read");
   const totalPages=finished.reduce((a,b)=>a+(parseInt(b.pages)||0),0);
@@ -548,15 +556,29 @@ export default function App(){
 
   if(view==="stats"){
     const chartData=statPeriod==="month"?getMonthlyData():getYearlyData();
-    const donutData=topGenres.map(([g,c])=>({label:g,value:c,color:colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8"}));
+    const filteredFinished=statsFilter==="all"?finished:finished.filter(b=>b.rating>=(parseInt(statsFilter)));
+    const donutData=Object.entries(filteredFinished.reduce((acc,b)=>{(b.genres||[]).forEach(g=>{acc[g]=(acc[g]||0)+1;});return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([g,c])=>({label:g,value:c,color:colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8"}));
+    const mostRecent=finished[0];
     return(
       <div style={css.app}>
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
+        {showScrollTop&&<button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{position:"fixed",bottom:"2rem",right:"2rem",zIndex:200,width:"44px",height:"44px",borderRadius:"50%",background:"rgba(255,255,255,0.2)",backdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:"1.2rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.3)"}}>↑</button>}
         <Hdr/>
         <div style={css.main}>
-          <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem"}}>Reading Stats</h2>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
+            <h2 style={{fontWeight:800,fontSize:"1.6rem",margin:0}}>Reading Stats</h2>
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+              <span style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.5)"}}>Filter by rating:</span>
+              <select style={{...css.sel,width:"auto",fontSize:"0.85rem",padding:"0.4rem 0.75rem"}} value={statsFilter} onChange={e=>setStatsFilter(e.target.value)}>
+                <option value="all">All books</option>
+                <option value="5">★★★★★ only</option>
+                <option value="4">★★★★ & above</option>
+                <option value="3">★★★ & above</option>
+              </select>
+            </div>
+          </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:"14px",marginBottom:"1.5rem"}}>
-            {[["Books Finished",finished.length,T.statFinishedColor],["Pages Read",totalPages.toLocaleString(),T.accentColor],["Avg Rating",avgRating,"#fbbf24"],["This Month",thisMonth,T.statReadingColor],["Reading Now",reading.length,T.statReadingColor]].map(([label,val,color])=>(
+            {[["Books Finished",filteredFinished.length,T.statFinishedColor],["Pages Read",filteredFinished.reduce((a,b)=>a+(parseInt(b.pages)||0),0).toLocaleString(),T.accentColor],["Avg Rating",filteredFinished.filter(b=>b.rating>0).length?(filteredFinished.filter(b=>b.rating>0).reduce((a,b)=>a+b.rating,0)/filteredFinished.filter(b=>b.rating>0).length).toFixed(1):"—","#fbbf24"],["This Month",thisMonth,T.statReadingColor],["Reading Now",reading.length,T.statReadingColor]].map(([label,val,color])=>(
               <div key={label} style={{...glass({borderRadius:"20px"}),padding:"1.5rem",position:"relative",overflow:"hidden",textAlign:"center"}}>
                 <div style={{position:"absolute",top:"-20px",right:"-20px",width:"80px",height:"80px",borderRadius:"50%",background:color,opacity:0.15}}/>
                 <div style={{fontSize:"2.5rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 20px ${color}80`}}>{val}</div>
@@ -564,6 +586,20 @@ export default function App(){
               </div>
             ))}
           </div>
+          {mostRecent&&(
+            <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem",marginBottom:"1.25rem",display:"flex",gap:"1.5rem",alignItems:"center",cursor:"pointer"}} onClick={()=>{setSelected(mostRecent);setView("detail");}}>
+              {mostRecent.cover_url
+                ?<img src={mostRecent.cover_url} alt="cover" style={{width:"70px",height:"100px",objectFit:"cover",borderRadius:"10px",boxShadow:"0 4px 16px rgba(0,0,0,0.4)",flexShrink:0}} onError={e=>e.target.style.display="none"}/>
+                :<div style={{width:"70px",height:"100px",background:mostRecent.spineColor||"#7c3aed",borderRadius:"10px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={28} color="rgba(255,255,255,0.5)"/></div>}
+              <div>
+                <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.45)",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"0.3rem"}}>Most Recently Completed</div>
+                <div style={{fontWeight:800,fontSize:"1.1rem",marginBottom:"0.2rem"}}>{mostRecent.title}</div>
+                {mostRecent.author&&<div style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem",marginBottom:"0.4rem"}}>by {mostRecent.author}</div>}
+                {mostRecent.rating>0&&<div style={{color:"#fbbf24",fontSize:"1rem",letterSpacing:"2px"}}>{"★".repeat(mostRecent.rating)}{"☆".repeat(5-mostRecent.rating)}</div>}
+                {mostRecent.date_read&&<div style={{color:"rgba(255,255,255,0.4)",fontSize:"0.78rem",marginTop:"0.3rem"}}>Finished {mostRecent.date_read}</div>}
+              </div>
+            </div>
+          )}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1.25rem",marginBottom:"1.25rem"}}>
             <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"1rem"}}>
@@ -580,7 +616,7 @@ export default function App(){
             </div>
           </div>
           <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
-            <h3 style={{margin:"0 0 1.25rem",fontWeight:700,fontSize:"1rem"}}>Genre Breakdown</h3>
+            <h3 style={{margin:"0 0 1.25rem",fontWeight:700,fontSize:"1rem"}}>Genre Breakdown {statsFilter!=="all"&&<span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.4)",fontWeight:400}}>({statsFilter}+ stars)</span>}</h3>
             {donutData.length>0?<DonutChart data={donutData}/>:<div style={{textAlign:"center",color:"rgba(255,255,255,0.4)",fontSize:"0.9rem",padding:"1rem 0"}}>Not enough data collected</div>}
           </div>
         </div>
@@ -658,9 +694,13 @@ export default function App(){
 
   const isNextUp=view==="nextup";
   const displayList=applyFilters(isNextUp?nextUp:reading);
+  const displayFinished=applyFilters(finished);
   return(
     <div style={css.app}>
       {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
+      {showScrollTop&&(
+        <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{position:"fixed",bottom:"2rem",right:"2rem",zIndex:200,width:"44px",height:"44px",borderRadius:"50%",background:"rgba(255,255,255,0.2)",backdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:"1.2rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.3)"}}>↑</button>
+      )}
       <Hdr/>
       <div style={css.main}>
         {!isNextUp&&(
@@ -683,15 +723,34 @@ export default function App(){
             <option>All</option>{allGenres.map(g=><option key={g}>{g}</option>)}
           </select>
         </div>
-        {displayList.length===0?(
+        {displayList.length===0&&!isNextUp?(
+          <div style={{textAlign:"center",marginTop:"3rem",color:"rgba(255,255,255,0.4)"}}>
+            <SvgIcon path={ICONS.book} size={48} color="rgba(255,255,255,0.15)"/>
+            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>Not currently reading anything</p>
+            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:"Currently Reading"});setAddingTo("bookshelf");setView("add");}}>Add a Book</button>
+          </div>
+        ):displayList.length===0&&isNextUp?(
           <div style={{textAlign:"center",marginTop:"5rem",color:"rgba(255,255,255,0.4)"}}>
             <SvgIcon path={ICONS.book} size={48} color="rgba(255,255,255,0.15)"/>
-            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>{isNextUp?"Nothing queued yet":"Not currently reading anything"}</p>
-            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:isNextUp?"Want to Read":"Currently Reading"});setAddingTo(view);setView("add");}}>Add a Book</button>
+            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>Nothing queued yet</p>
+            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:"Want to Read"});setAddingTo("nextup");setView("add");}}>Add a Book</button>
           </div>
         ):(
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
             {displayList.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
+          </div>
+        )}
+
+        {!isNextUp&&displayFinished.length>0&&(
+          <div style={{marginTop:"3rem"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"1.5rem"}}>
+              <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.15)"}}/>
+              <span style={{color:"rgba(255,255,255,0.5)",fontSize:"0.85rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",whiteSpace:"nowrap"}}>Recently Completed</span>
+              <div style={{flex:1,height:"1px",background:"rgba(255,255,255,0.15)"}}/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
+              {displayFinished.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
+            </div>
           </div>
         )}
       </div>
