@@ -213,6 +213,13 @@ export default function App(){
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
   const debRef=useRef(null);
 
+  const handleTitleChange = e => {
+    const v = e.target.value;
+    setForm(f => ({...f, title: v}));
+    clearTimeout(debRef.current);
+    debRef.current = setTimeout(() => searchOL(v), 500);
+  };
+
   useEffect(()=>{
     setBooks(loadArr(BKEY));setTheme(loadObj(TKEY,DEFAULTS));
     const u=loadObj(UKEY,{name:""});setUser(u);if(!u.name)setShowOnboard(true);
@@ -232,9 +239,9 @@ export default function App(){
   const iconMap={...DEFAULT_GENRE_ICONS,...genreIcons};
   const colorMap={...DEFAULT_GENRE_COLORS,...genreColors};
 
-  const bg=`linear-gradient(135deg, ${T.bgFrom} 0%, ${T.bgTo} 100%)`;
-
-  const glass=(extra={})=>({background:"rgba(255,255,255,0.12)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:"20px",boxShadow:"0 8px 32px rgba(0,0,0,0.2)",...extra});
+  const glass = useRef(null);
+  glass.current = (extra={})=>({background:"rgba(255,255,255,0.12)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:"20px",boxShadow:"0 8px 32px rgba(0,0,0,0.2)",...extra});
+  const glassF = (extra={}) => glass.current(extra);
 
   const css={
     app:{fontFamily:T.fontFamily,minHeight:"100vh",background:bg,color:T.textColor,position:"relative"},
