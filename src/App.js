@@ -1,4 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 const BUILT_IN_GENRES = [
   "Fiction","Non-Fiction","Fantasy","High Fantasy","Dark Fantasy","Romantasy",
@@ -61,7 +67,7 @@ const DEFAULT_GENRE_COLORS = {
   "Royalty":"#fbbf24","Favorite":"#f59e0b","Other":"#94a3b8"
 };
 
-const BKEY="blib_books_v6",TKEY="blib_theme_v5",UKEY="blib_user_v4",GKEY="blib_genres_v3",CGKEY="blib_custom_genres_v2";
+const CGKEY="blib_custom_genres_v2";
 const loadArr=k=>{try{return JSON.parse(localStorage.getItem(k)||"[]")}catch{return[];}};
 const loadObj=(k,def)=>{try{return{...def,...JSON.parse(localStorage.getItem(k)||"{}")}}catch{return def;}};
 const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -382,28 +388,35 @@ export default function App(){
     setAiLoading(false);setFillStep("");
   };
 
-  const saveBook=()=>{
+  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
+
+  const saveBook=async()=>{
     if(!form.title.trim())return showToast("Title is required!","error");
+    const newBook={...form,id:editMode&&selected?selected.id:Date.now().toString(),created_at:editMode&&selected?selected.created_at:new Date().toISOString(),spineColor:editMode&&selected?selected.spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]};
     if(editMode&&selected){
-      updBooks(books.map(b=>b.id===selected.id?{...b,...form}:b));
-      setSelected({...selected,...form});
+      setBooks(books.map(b=>b.id===selected.id?newBook:b));
+      setSelected(newBook);
       showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);
     }else{
-      updBooks([{...form,id:Date.now().toString(),created_at:new Date().toISOString(),spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]},...books]);
+      setBooks([newBook,...books]);
       showToast("Book added!");setForm(emptyForm);setView(addingTo);
     }
+    await saveBookToDb(newBook);
   };
 
-  const markFinished=book=>{
+  const markFinished=async book=>{
     const today=new Date().toISOString().split("T")[0];
-    updBooks(books.map(b=>b.id===book.id?{...b,status:"Finished",date_read:b.date_read||today}:b));
+    const updated={...book,status:"Finished",date_read:book.date_read||today};
+    setBooks(books.map(b=>b.id===book.id?updated:b));
     showToast(`"${book.title}" marked as finished!`);
+    await saveBookToDb(updated);
   };
 
-  const deleteBook=id=>{
+  const deleteBook=async id=>{
     if(!window.confirm("Delete this book?"))return;
-    updBooks(books.filter(b=>b.id!==id));
+    setBooks(books.filter(b=>b.id!==id));
     showToast("Deleted.");setView("bookshelf");
+    await deleteBookFromDb(id);
   };
 
   const addCustomGenre=()=>{
