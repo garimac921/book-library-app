@@ -67,19 +67,12 @@ const DEFAULT_GENRE_COLORS = {
   "Royalty":"#fbbf24","Favorite":"#f59e0b","Other":"#94a3b8"
 };
 
-const CGKEY="blib_custom_genres_v2";
-const loadArr=k=>{try{return JSON.parse(localStorage.getItem(k)||"[]")}catch{return[];}};
-const loadObj=(k,def)=>{try{return{...def,...JSON.parse(localStorage.getItem(k)||"{}")}}catch{return def;}};
-const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const SPINES=["#e11d48","#7c3aed","#2563eb","#059669","#d97706","#0891b2","#9333ea","#b45309"];
 
 const glass=(extra={})=>({
-  background:"rgba(255,255,255,0.12)",
-  backdropFilter:"blur(16px)",
-  WebkitBackdropFilter:"blur(16px)",
-  border:"1px solid rgba(255,255,255,0.2)",
-  borderRadius:"20px",
-  boxShadow:"0 8px 32px rgba(0,0,0,0.2)",
-  ...extra
+  background:"rgba(255,255,255,0.12)",backdropFilter:"blur(16px)",
+  WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.2)",
+  borderRadius:"20px",boxShadow:"0 8px 32px rgba(0,0,0,0.2)",...extra
 });
 
 const SvgIcon=({path,size=16,color="currentColor",sw=2})=>(
@@ -185,10 +178,8 @@ const LineChart=({data,color})=>{
 };
 
 const emptyForm={title:"",author:"",genres:[],status:"Currently Reading",rating:0,notes:"",date_read:"",cover_url:"",pages:""};
-const SPINES=["#e11d48","#7c3aed","#2563eb","#059669","#d97706","#0891b2","#9333ea","#b45309"];
 
-// Top-level component — defined outside App to prevent remounting on every keystroke
-const AddEditView=({editMode,addingTo,form,setForm,olResults,setOlResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
+const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
   const inp=(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",...x});
   const sel={width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"};
   const lbl={fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"};
@@ -198,35 +189,23 @@ const AddEditView=({editMode,addingTo,form,setForm,olResults,setOlResults,olSear
     <div style={{...glass({borderRadius:"20px"}),padding:"1.75rem"}}>
       <div style={{marginBottom:"1.25rem"}}>
         <label style={lbl}>Book Title</label>
-        <div style={{display:"flex",gap:"0.6rem",position:"relative"}}>
-          <div style={{flex:1,position:"relative"}}>
-            <input
-              style={inp()}
-              placeholder="Search for a book..."
-              value={form.title}
-              onChange={e=>{
-                const v=e.target.value;
-                setForm(f=>({...f,title:v}));
-                clearTimeout(debRef.current);
-                debRef.current=setTimeout(()=>searchOL(v),250);
-              }}
-            />
-            {(olResults.length>0||olSearching)&&(
-              <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
-                {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
-                {olResults.map((b,i)=>(
-                  <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
-                    style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
-                    onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
-                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                    {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
-                    <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
+        <div style={{position:"relative"}}>
+          <input style={inp()} placeholder="Search for a book..." value={form.title}
+            onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}/>
+          {(olResults.length>0||olSearching)&&(
+            <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
+              {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
+              {olResults.map((b,i)=>(
+                <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
+                  style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
+                  onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
+                  onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
+                  <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
@@ -277,7 +256,7 @@ const BookCard=({book,iconMap,colorMap,markFinished,setSelected,setAiResult,setV
           <div style={{fontWeight:700,fontSize:"1rem",lineHeight:1.3,marginBottom:"4px",overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{book.title}</div>
           {book.author&&<div style={{color:"rgba(255,255,255,0.6)",fontSize:"0.82rem",marginBottom:"8px"}}>{book.author}</div>}
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginBottom:"8px"}}>
-            {(book.genres||[]).map(g=>{const c=colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8";return<span key={g} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:c+"30",color:"#fff",border:`1.5px solid ${c}60`}}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}</span>;})}
+            {(book.genres||[]).map(g=>{const c=colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8";return<span key={g} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:"rgba(0,0,0,0.35)",color:"#fff",border:`1.5px solid ${c}80`}}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}</span>;})}
           </div>
           {book.rating>0&&<div style={{color:"#fbbf24",fontSize:"0.9rem",letterSpacing:"2px"}}>{"★".repeat(book.rating)}{"☆".repeat(5-book.rating)}</div>}
         </div>
@@ -321,20 +300,31 @@ export default function App(){
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
   const debRef=useRef(null);
 
+  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
+
   useEffect(()=>{
-    setBooks(loadArr(BKEY));setTheme(loadObj(TKEY,DEFAULTS));
-    const u=loadObj(UKEY,{name:""});setUser(u);if(!u.name)setShowOnboard(true);
-    setGenreIcons(loadObj(GKEY+"_icons",{}));setGenreColors(loadObj(GKEY+"_colors",{}));
-    setCustomGenres(loadArr(CGKEY));
+    const init=async()=>{
+      const {data:booksData}=await supabase.from("books").select("*").order("created_at",{ascending:false});
+      if(booksData) setBooks(booksData.map(b=>({...b,genres:b.genres||[],spineColor:b.spine_color})));
+      const {data:settingsData}=await supabase.from("settings").select("*");
+      if(settingsData&&settingsData.length>0){
+        const m=Object.fromEntries(settingsData.map(s=>[s.key,s.value]));
+        if(m.theme) setTheme({...DEFAULTS,...m.theme});
+        if(m.user){setUser(m.user);if(!m.user.name)setShowOnboard(true);}else setShowOnboard(true);
+        if(m.genreIcons) setGenreIcons(m.genreIcons);
+        if(m.genreColors) setGenreColors(m.genreColors);
+        if(m.customGenres) setCustomGenres(m.customGenres);
+      } else setShowOnboard(true);
+    };
+    init();
   },[]);
 
-  
-  const updBooks=b=>{setBooks(b);sv(BKEY,b);};
-  const updTheme=t=>{setTheme(t);sv(TKEY,t);};
-  const updUser=u=>{setUser(u);sv(UKEY,u);};
-  const updGenreIcons=m=>{setGenreIcons(m);sv(GKEY+"_icons",m);};
-  const updGenreColors=m=>{setGenreColors(m);sv(GKEY+"_colors",m);};
-  const updCustomGenres=g=>{setCustomGenres(g);sv(CGKEY,g);};
+  const saveSetting=async(key,value)=>{ await supabase.from("settings").upsert({key,value}); };
+  const updTheme=t=>{setTheme(t);saveSetting("theme",t);};
+  const updUser=u=>{setUser(u);saveSetting("user",u);};
+  const updGenreIcons=m=>{setGenreIcons(m);saveSetting("genreIcons",m);};
+  const updGenreColors=m=>{setGenreColors(m);saveSetting("genreColors",m);};
+  const updCustomGenres=g=>{setCustomGenres(g);saveSetting("customGenres",g);};
 
   const T=theme;
   const allGenres=[...BUILT_IN_GENRES,...customGenres];
@@ -362,22 +352,17 @@ export default function App(){
     try{
       const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=5&fields=title,author_name,cover_i,number_of_pages_median`);
       const d=await r.json();
-      const mapped=(d.docs||[]).map(b=>({title:b.title,author:b.author_name?.[0]||"Unknown",pages:b.number_of_pages_median||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:"",cover_url_large:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:""}));
-      setOlResults(mapped);
+      setOlResults((d.docs||[]).map(b=>({title:b.title,author:b.author_name?.[0]||"Unknown",pages:b.number_of_pages_median||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:"",cover_url_large:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:""})));
     }catch{setOlResults([]);}
     setOlSearching(false);
   };
-
-  async function searchOLFull(title){
-    try{const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1&fields=title,author_name,cover_i,number_of_pages_median`);const d=await r.json();const b=d.docs?.[0];if(!b)return null;return{author:b.author_name?.[0]||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:"",pages:b.number_of_pages_median||""};}catch{return null;}
-  }
 
   const autoFill=async()=>{
     if(!form.title.trim())return showToast("Enter a title first!","error");
     setAiLoading(true);setFillStep("Searching...");
     try{
       const[olData,aiRes]=await Promise.all([
-        searchOLFull(form.title),
+        fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(form.title)}&limit=1&fields=title,author_name,cover_i,number_of_pages_median`).then(r=>r.json()).then(d=>{const b=d.docs?.[0];if(!b)return null;return{author:b.author_name?.[0]||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:"",pages:b.number_of_pages_median||""};}),
         fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":process.env.REACT_APP_ANTHROPIC_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:`Return ONLY raw JSON: genre (one of: ${allGenres.join(",")}), notes (2-sentence summary). No markdown.`,messages:[{role:"user",content:`Book: "${form.title}"${form.author?`, by "${form.author}"`:""}` }]})}).then(r=>r.json()).then(d=>d.content?.[0]?.text||"")
       ]);
       if(olData){setForm(f=>({...f,...olData,title:form.title}));setFillStep("Cover found!");}
@@ -388,20 +373,13 @@ export default function App(){
     setAiLoading(false);setFillStep("");
   };
 
-  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
-
   const saveBook=async()=>{
     if(!form.title.trim())return showToast("Title is required!","error");
-    const newBook={...form,id:editMode&&selected?selected.id:Date.now().toString(),created_at:editMode&&selected?selected.created_at:new Date().toISOString(),spineColor:editMode&&selected?selected.spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]};
-    if(editMode&&selected){
-      setBooks(books.map(b=>b.id===selected.id?newBook:b));
-      setSelected(newBook);
-      showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);
-    }else{
-      setBooks([newBook,...books]);
-      showToast("Book added!");setForm(emptyForm);setView(addingTo);
-    }
-    await saveBookToDb(newBook);
+    const isEdit=editMode&&selected;
+    const book={...form,id:isEdit?selected.id:Date.now().toString(),created_at:isEdit?selected.created_at:new Date().toISOString(),spineColor:isEdit?selected.spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]};
+    if(isEdit){setBooks(books.map(b=>b.id===book.id?book:b));setSelected(book);showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);}
+    else{setBooks([book,...books]);showToast("Book added!");setForm(emptyForm);setView(addingTo);}
+    await supabase.from("books").upsert({id:book.id,title:book.title,author:book.author,genres:book.genres,status:book.status,rating:book.rating||null,notes:book.notes,date_read:book.date_read||null,cover_url:book.cover_url,pages:book.pages?parseInt(book.pages):null,spine_color:book.spineColor,created_at:book.created_at});
   };
 
   const markFinished=async book=>{
@@ -409,14 +387,14 @@ export default function App(){
     const updated={...book,status:"Finished",date_read:book.date_read||today};
     setBooks(books.map(b=>b.id===book.id?updated:b));
     showToast(`"${book.title}" marked as finished!`);
-    await saveBookToDb(updated);
+    await supabase.from("books").upsert({id:updated.id,title:updated.title,author:updated.author,genres:updated.genres,status:updated.status,rating:updated.rating||null,notes:updated.notes,date_read:updated.date_read||null,cover_url:updated.cover_url,pages:updated.pages?parseInt(updated.pages):null,spine_color:updated.spineColor,created_at:updated.created_at});
   };
 
   const deleteBook=async id=>{
     if(!window.confirm("Delete this book?"))return;
     setBooks(books.filter(b=>b.id!==id));
     showToast("Deleted.");setView("bookshelf");
-    await deleteBookFromDb(id);
+    await supabase.from("books").delete().eq("id",id);
   };
 
   const addCustomGenre=()=>{
@@ -429,7 +407,11 @@ export default function App(){
     setNewGenreName("");showToast(`Added "${name}"!`);
   };
 
-  const finished=books.filter(b=>b.status==="Finished");
+  const finished=books.filter(b=>b.status==="Finished").sort((a,b)=>{
+    const da=a.date_read?new Date(a.date_read):new Date(a.created_at);
+    const db=b.date_read?new Date(b.date_read):new Date(b.created_at);
+    return db-da;
+  });
   const reading=books.filter(b=>b.status==="Currently Reading");
   const nextUp=books.filter(b=>b.status==="Want to Read");
   const totalPages=finished.reduce((a,b)=>a+(parseInt(b.pages)||0),0);
@@ -441,7 +423,6 @@ export default function App(){
 
   const getMonthlyData=()=>Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleString("default",{month:"short"}),value:finished.filter(b=>{if(!b.date_read)return false;const bd=new Date(b.date_read);return bd.getMonth()===d.getMonth()&&bd.getFullYear()===d.getFullYear();}).length};});
   const getYearlyData=()=>Array.from({length:5},(_,i)=>{const y=now.getFullYear()-4+i;return{label:String(y),value:finished.filter(b=>b.date_read&&new Date(b.date_read).getFullYear()===y).length};});
-
   const applyFilters=list=>list.filter(b=>{
     if(fGenre!=="All"&&!(b.genres||[]).includes(fGenre))return false;
     if(fSearch&&!b.title.toLowerCase().includes(fSearch.toLowerCase())&&!b.author?.toLowerCase().includes(fSearch.toLowerCase()))return false;
@@ -489,15 +470,7 @@ export default function App(){
       <Hdr backTo={editMode?"detail":addingTo}/>
       <div style={css.main}>
         <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.4rem"}}>{editMode?"Edit Book":`Add to ${addingTo==="nextup"?"Next-Up":"Bookshelf"}`}</h2>
-        <AddEditView
-          editMode={editMode} addingTo={addingTo} form={form} setForm={setForm}
-          olResults={olResults} setOlResults={setOlResults} olSearching={olSearching} searchOL={searchOL}
-          autoFill={autoFill} aiLoading={aiLoading} fillStep={fillStep}
-          allGenres={allGenres} colorMap={colorMap} iconMap={iconMap}
-          manualCover={manualCover} setManualCover={setManualCover}
-          saveBook={saveBook} STATUSES={STATUSES} debRef={debRef}
-          onBack={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}
-        />
+        <AddEditView editMode={editMode} form={form} setForm={setForm} olResults={olResults} setOlResults={setOlResults} olSearching={olSearching} searchOL={searchOL} autoFill={autoFill} aiLoading={aiLoading} fillStep={fillStep} allGenres={allGenres} colorMap={colorMap} iconMap={iconMap} manualCover={manualCover} setManualCover={setManualCover} saveBook={saveBook} STATUSES={STATUSES} debRef={debRef} onBack={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}/>
       </div>
     </div>
   );
@@ -512,9 +485,8 @@ export default function App(){
         <div style={{...css.main,maxWidth:"960px"}}>
           <div style={{...glass({borderRadius:"28px"}),padding:"3rem",display:"flex",gap:"3rem",flexWrap:"wrap",alignItems:"flex-start"}}>
             <div style={{flexShrink:0}}>
-              {book.cover_url
-                ?<img src={book.cover_url} alt="cover" style={{width:"220px",borderRadius:"18px",display:"block",boxShadow:"0 20px 50px rgba(0,0,0,0.5)"}} onError={e=>e.target.style.display="none"}/>
-                :<div style={{width:"220px",height:"310px",background:book.spineColor||"#7c3aed",borderRadius:"18px",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 20px 50px rgba(0,0,0,0.4)"}}><SvgIcon path={ICONS.book} size={56} color="rgba(255,255,255,0.4)"/></div>}
+              {book.cover_url?<img src={book.cover_url} alt="cover" style={{width:"220px",borderRadius:"18px",display:"block",boxShadow:"0 20px 50px rgba(0,0,0,0.5)"}} onError={e=>e.target.style.display="none"}/>
+                :<div style={{width:"220px",height:"310px",background:book.spineColor||"#7c3aed",borderRadius:"18px",display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={56} color="rgba(255,255,255,0.4)"/></div>}
             </div>
             <div style={{flex:1,minWidth:"240px"}}>
               <h1 style={{margin:"0 0 0.4rem",fontSize:"2.2rem",fontWeight:800,lineHeight:1.15,letterSpacing:"-0.5px"}}>{book.title}</h1>
@@ -564,16 +536,11 @@ export default function App(){
               <option>All</option>{allGenres.map(g=><option key={g}>{g}</option>)}
             </select>
           </div>
-          {displayFinished.length===0?(
-            <div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}>
-              <SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/>
-              <p style={{marginTop:"1rem"}}>No finished books yet</p>
-            </div>
-          ):(
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
+          {displayFinished.length===0
+            ?<div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}><SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/><p style={{marginTop:"1rem"}}>No finished books yet</p></div>
+            :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
               {displayFinished.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
-            </div>
-          )}
+            </div>}
         </div>
       </div>
     );
