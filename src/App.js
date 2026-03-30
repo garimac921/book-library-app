@@ -163,6 +163,8 @@ const LineChart=({data,color})=>{
   );
 };
 
+const emptyForm={title:"",author:"",genres:[],status:"Currently Reading",rating:0,notes:"",date_read:"",cover_url:"",pages:""};
+
 const OLDropdown=({results,searching,onSelect,glass,inp})=>{
   if(!results.length&&!searching) return null;
   return(
@@ -324,36 +326,7 @@ export default function App(){
     </div>
   );
 
-  const BookCard=({book})=>{
-    const isReading=book.status==="Currently Reading";
-    return(
-      <div style={{...css.bookCard,transition:"all 0.2s"}}
-        onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-6px) scale(1.02)";e.currentTarget.style.boxShadow="0 20px 50px rgba(0,0,0,0.4)";}}
-        onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0) scale(1)";e.currentTarget.style.boxShadow=glass().boxShadow;}}>
-        <div onClick={()=>{setSelected(book);setAiResult("");setView("detail");}}>
-          <div style={{width:"100%",paddingTop:"148%",position:"relative",overflow:"hidden",background:book.spineColor||"#7c3aed",borderRadius:"20px 20px 0 0"}}>
-            {book.cover_url&&<img src={book.cover_url} alt="cover" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>e.target.style.display="none"}/>}
-            {!book.cover_url&&<div style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={40} color="rgba(255,255,255,0.4)"/></div>}
-          </div>
-          <div style={{padding:"14px 14px 10px"}}>
-            <div style={{fontWeight:700,fontSize:"1rem",lineHeight:1.3,marginBottom:"4px",overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{book.title}</div>
-            {book.author&&<div style={{color:"rgba(255,255,255,0.6)",fontSize:"0.82rem",marginBottom:"8px"}}>{book.author}</div>}
-            <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginBottom:"8px"}}>
-              {(book.genres||[]).map(g=><span key={g} style={css.tag(g)}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}</span>)}
-            </div>
-            {book.rating>0&&<div style={{color:"#fbbf24",fontSize:"0.9rem",letterSpacing:"2px",textShadow:"0 0 8px #fbbf24aa"}}>{"★".repeat(book.rating)}{"☆".repeat(5-book.rating)}</div>}
-          </div>
-        </div>
-        {isReading&&(
-          <div style={{padding:"0 14px 14px"}}>
-            <button style={{...css.btn("rgba(16,185,129,0.3)","#fff",{width:"100%",justifyContent:"center",fontSize:"0.82rem",border:"1px solid rgba(16,185,129,0.5)"}),borderRadius:"12px"}} onClick={e=>{e.stopPropagation();markFinished(book);}}>
-              <SvgIcon path={ICONS.check} size={13} color="#fff"/>Mark as Finished
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
+
 
   const FormSection=({children,style={}})=><div style={{...glass({borderRadius:"20px"}),padding:"1.75rem",...style}}>{children}</div>;
 
@@ -668,7 +641,7 @@ export default function App(){
           </div>
         ):(
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
-            {displayList.map(book=><BookCard key={book.id} book={book}/>)}
+            {displayList.map(book=><BookCard key={book.id} book={book} css={css} glass={glass} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView} ICONS={ICONS}/>)}
           </div>
         )}
       </div>
