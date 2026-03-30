@@ -189,15 +189,14 @@ const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,sea
     <div style={{...glass({borderRadius:"20px"}),padding:"1.75rem"}}>
       <div style={{marginBottom:"1.25rem"}}>
         <label style={lbl}>Book Title</label>
-        <div style={{position:"relative"}}>
+        <div style={{position:"relative"}} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOlResults([]);}}>
           <input style={inp()} placeholder="Search for a book, or type manually..." value={form.title}
-            onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}
-            onBlur={()=>setTimeout(()=>setOlResults([]),200)}/>
+            onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}/>
           {(olResults.length>0||olSearching)&&(
             <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
               {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
               {olResults.map((b,i)=>(
-                <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
+                <div key={i} tabIndex={-1} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
                   style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
                   onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
                   onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
