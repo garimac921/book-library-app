@@ -345,7 +345,7 @@ export default function App(){
     sel:{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"},
     lbl:{fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"},
     btn:(bg,fg="#fff",x={})=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.6rem 1.3rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:bg,color:fg,boxShadow:"0 4px 14px rgba(0,0,0,0.25)",transition:"all 0.15s",...x}),
-    tag:(genre)=>{const c=colorMap[genre]||"#94a3b8";return{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:c+"30",color:"#fff",border:`1.5px solid ${c}60`};},
+    tag:(genre)=>{const c=colorMap[genre]||"#94a3b8";return{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:"rgba(0,0,0,0.35)",color:"#fff",border:`1.5px solid ${c}80`,textShadow:"0 1px 3px rgba(0,0,0,0.5)"};},
     toast:(tp)=>({position:"fixed",bottom:"1.5rem",right:"1.5rem",background:tp==="error"?"rgba(239,68,68,0.95)":"rgba(16,185,129,0.95)",backdropFilter:"blur(12px)",color:"#fff",padding:"0.8rem 1.4rem",borderRadius:"999px",fontWeight:700,zIndex:9999}),
     aiBox:{...glass({borderRadius:"16px"}),padding:"1.5rem",marginTop:"1.25rem",lineHeight:1.8,whiteSpace:"pre-wrap",fontSize:"0.95rem"},
   };
@@ -537,31 +537,30 @@ export default function App(){
   }
 
   if(view==="finished"){
-    const rows=[];for(let i=0;i<finished.length;i+=8)rows.push(finished.slice(i,i+8));
+    const displayFinished=applyFilters(finished);
     return(
       <div style={css.app}>
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
         <Hdr/>
         <div style={css.main}>
           <h2 style={{fontWeight:800,margin:"0 0 0.3rem",fontSize:"1.6rem"}}>Finished</h2>
-          <p style={{color:"rgba(255,255,255,0.55)",margin:"0 0 2rem"}}>{finished.length} book{finished.length!==1?"s":""} completed</p>
-          {finished.length===0?(<div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}><SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/><p style={{marginTop:"1rem"}}>No finished books yet</p></div>)
-          :rows.map((row,ri)=>(
-            <div key={ri} style={{marginBottom:"3rem"}}>
-              <div style={{display:"flex",alignItems:"flex-end",gap:"4px",padding:"0 4px"}}>
-                {row.map((book,bi)=>{const h=120+((bi*37)%55);const sc=book.spineColor||SPINES[bi%SPINES.length];return(
-                  <div key={book.id} title={book.title} onClick={()=>{setSelected(book);setView("detail");}} style={{flex:"1",minWidth:"50px",maxWidth:"90px",cursor:"pointer",transition:"transform 0.15s"}}
-                    onMouseEnter={e=>e.currentTarget.style.transform="translateY(-14px)"}
-                    onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-                    {book.cover_url?<img src={book.cover_url} alt={book.title} style={{width:"100%",height:`${h}px`,objectFit:"cover",borderRadius:"2px 6px 6px 2px",boxShadow:"4px 6px 16px rgba(0,0,0,0.4)",display:"block"}} onError={e=>{e.target.style.display="none";e.target.nextSibling.style.display="flex";}}/>:null}
-                    <div style={{display:book.cover_url?"none":"flex",width:"100%",height:`${h}px`,background:sc,borderRadius:"2px 6px 6px 2px",boxShadow:"4px 6px 16px rgba(0,0,0,0.4)",alignItems:"center",justifyContent:"center",writingMode:"vertical-rl",fontSize:"0.62rem",fontWeight:700,color:"rgba(255,255,255,0.85)",padding:"4px",boxSizing:"border-box",overflow:"hidden",userSelect:"none"}}>{book.title}</div>
-                  </div>
-                );})}
-                {row.length<8&&[...Array(8-row.length)].map((_,i)=><div key={i} style={{flex:"1",minWidth:"50px",maxWidth:"90px"}}/>)}
-              </div>
-              <div style={{height:"14px",background:"rgba(255,255,255,0.15)",borderRadius:"3px",margin:"3px 0 0"}}/>
+          <p style={{color:"rgba(255,255,255,0.55)",margin:"0 0 1.5rem"}}>{finished.length} book{finished.length!==1?"s":""} completed</p>
+          <div style={{display:"flex",gap:"0.75rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
+            <input style={{...css.inp(),maxWidth:"260px"}} placeholder="Search..." value={fSearch} onChange={e=>setFSearch(e.target.value)}/>
+            <select style={{...css.sel,width:"auto"}} value={fGenre} onChange={e=>setFGenre(e.target.value)}>
+              <option>All</option>{allGenres.map(g=><option key={g}>{g}</option>)}
+            </select>
+          </div>
+          {displayFinished.length===0?(
+            <div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}>
+              <SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/>
+              <p style={{marginTop:"1rem"}}>No finished books yet</p>
             </div>
-          ))}
+          ):(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
+              {displayFinished.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
+            </div>
+          )}
         </div>
       </div>
     );
