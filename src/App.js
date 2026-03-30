@@ -285,7 +285,7 @@ export default function App(){
     return true;
   });
 
-  const NAV_TABS=[["bookshelf","book","Bookshelf"],["nextup","bookmark","Next-Up"],["finished","shelves","Finished"],["stats","chart","Stats"],["ai","sparkle","AI"],["settings","settings","Settings"]];
+  const NAV_TABS=[["bookshelf","book","Bookshelf"],["nextup","bookmark","Next-Up"],["finished","shelves","Finished"],["stats","chart","Stats"],["settings","settings","Settings"]];
 
   const NavTabs=()=>(
     <div style={{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}}>
@@ -366,7 +366,7 @@ export default function App(){
             <label style={css.lbl}>Book Title</label>
             <div style={{display:"flex",gap:"0.6rem",position:"relative"}}>
               <div style={{flex:1,position:"relative"}}>
-                <input style={css.inp()} placeholder="Search for a book..." value={form.title} onChange={e=>{setForm(f=>({...f,title:e.target.value}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(e.target.value),300);}}/>
+                <input style={css.inp()} placeholder="Search for a book..." value={form.title} onChange={e=>{setForm(f=>({...f,title:e.target.value}));clearTimeout(debRef.current);  debRef.current=setTimeout(()=>searchOL(e.target.value),500);}}/>
                 {(olResults.length>0||olSearching)&&(
                   <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
                     {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
@@ -381,9 +381,9 @@ export default function App(){
                   </div>
                 )}
               </div>
-              <button style={css.btn("rgba(255,255,255,0.2)","#fff")} onClick={autoFill} disabled={aiLoading}>
-                <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?(fillStep||"Filling..."):"Auto-fill"}
-              </button>
+                <button style={css.btn("rgba(255,255,255,0.2)","#fff")} onClick={autoFill} disabled={aiLoading}>
+                  <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?(fillStep||"Filling..."):"Auto-fill"}
+                </button>
             </div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
@@ -457,9 +457,7 @@ export default function App(){
                     <SvgIcon path={ICONS.check} size={14} color="#fff"/>Mark as Finished
                   </button>
                 )}
-                <button style={css.btn("rgba(139,92,246,0.4)","#fff")} onClick={async()=>{setAiLoading(true);setAiResult("");try{setAiResult(await callClaude(`Book: "${book.title}" by ${book.author}. Rating: ${book.rating}★.`,"Generate 3 warm, reflective insights or questions about this book."));}catch{setAiResult("Couldn't generate notes.");}setAiLoading(false);}}>
-                  <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?"Thinking...":"Smart Notes"}
-                </button>
+
                 <button style={css.btn("rgba(239,68,68,0.25)","#fff",{border:"1px solid rgba(239,68,68,0.4)"})} onClick={()=>deleteBook(book.id)}>
                   <SvgIcon path={ICONS.trash} size={14} color="#fff"/>Delete
                 </button>
@@ -616,32 +614,7 @@ export default function App(){
     );
   }
 
-  // ── AI ──
-  if(view==="ai")return(
-    <div style={css.app}>
-      {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
-      <Hdr/>
-      <div style={css.main}>
-        <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>AI Features</h2>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1.25rem",marginBottom:"1.25rem"}}>
-          <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
-            <h3 style={{margin:"0 0 0.5rem",fontWeight:700,fontSize:"1.05rem"}}>Recommendations</h3>
-            <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.9rem",margin:"0 0 1rem",lineHeight:1.6}}>Picks based on your reading history.</p>
-            <button style={css.btn("rgba(255,255,255,0.95)","#7c3aed")} onClick={async()=>{setAiLoading(true);setAiResult("");try{const f=finished.map(b=>`${b.title} by ${b.author}`).join(", ");setAiResult(await callClaude(`Finished: ${f||"none"}.`,"Suggest 5 books. Format: **Title** by Author — one sentence why."));}catch{setAiResult("Couldn't get recommendations.");}setAiLoading(false);}} disabled={aiLoading}>
-              <SvgIcon path={ICONS.sparkle} size={14} color="#7c3aed"/>{aiLoading?"Thinking...":"Get Recommendations"}
-            </button>
-          </div>
-          <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
-            <h3 style={{margin:"0 0 0.5rem",fontWeight:700,fontSize:"1.05rem"}}>Mood Picker</h3>
-            <p style={{color:"rgba(255,255,255,0.6)",fontSize:"0.9rem",margin:"0 0 0.75rem",lineHeight:1.6}}>Tell me how you're feeling.</p>
-            <input style={{...css.inp(),marginBottom:"0.75rem"}} placeholder="e.g. cozy, adventurous..." value={mood} onChange={e=>setMood(e.target.value)}/>
-            <button style={css.btn("rgba(251,191,36,0.3)","#fff",{border:"1px solid rgba(251,191,36,0.4)"})} onClick={async()=>{if(!mood.trim())return showToast("Describe your mood!","error");setAiLoading(true);setAiResult("");try{const w=nextUp.map(b=>`${b.title} by ${b.author}`).join(", ");setAiResult(await callClaude(`Mood: "${mood}". Next-Up: ${w||"none"}.`,"Suggest 3 books from list, or general picks. Be warm and brief."));}catch{setAiResult("Couldn't get suggestions.");}setAiLoading(false);}} disabled={aiLoading}>{aiLoading?"Thinking...":"Suggest"}</button>
-          </div>
-        </div>
-        {aiResult&&<div style={css.aiBox}>{aiResult}</div>}
-      </div>
-    </div>
-  );
+
 
   // ── BOOKSHELF / NEXT-UP ──
   const isNextUp=view==="nextup";
