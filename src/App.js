@@ -244,7 +244,7 @@ export default function App(){
   const glassF = (extra={}) => glass.current(extra);
 
   const css={
-    app:{fontFamily:T.fontFamily,minHeight:"100vh",background:bg,color:T.textColor,position:"relative"},
+    app:appStyle,
     hdr:{...glass({borderRadius:0,borderLeft:"none",borderRight:"none",borderTop:"none"}),padding:"0 2.5rem",height:"72px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100},
     logo:{fontSize:"1.5rem",fontWeight:800,color:"#fff",letterSpacing:"-0.5px",textShadow:"0 2px 12px rgba(0,0,0,0.3)"},
     pill:(a)=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.55rem 1.3rem",borderRadius:"999px",border:a?"none":"1.5px solid rgba(255,255,255,0.3)",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:a?"rgba(255,255,255,0.95)":"rgba(255,255,255,0.1)",color:a?"#7c3aed":"rgba(255,255,255,0.85)",transition:"all 0.18s",boxShadow:a?"0 4px 16px rgba(0,0,0,0.25), 0 2px 0 rgba(0,0,0,0.15)":"none",transform:a?"translateY(-1px)":"none"}),
