@@ -10,25 +10,21 @@ const BUILT_IN_GENRES = [
 ];
 const STATUSES = ["Want to Read","Currently Reading","Finished"];
 const FONTS = [
-  {label:"System UI",     value:"'Segoe UI',sans-serif"},
-  {label:"Inter",         value:"'Inter',sans-serif"},
-  {label:"Georgia Serif", value:"Georgia,serif"},
-  {label:"Playfair",      value:"'Playfair Display',serif"},
-  {label:"Mono",          value:"'Courier New',monospace"},
-  {label:"Futura",        value:"'Trebuchet MS',sans-serif"},
-  {label:"Garamond",      value:"Garamond,serif"},
-  {label:"Helvetica",     value:"'Helvetica Neue',Arial,sans-serif"},
+  {label:"System UI",value:"'Segoe UI',sans-serif"},
+  {label:"Inter",value:"'Inter',sans-serif"},
+  {label:"Georgia Serif",value:"Georgia,serif"},
+  {label:"Playfair",value:"'Playfair Display',serif"},
+  {label:"Mono",value:"'Courier New',monospace"},
+  {label:"Futura",value:"'Trebuchet MS',sans-serif"},
+  {label:"Garamond",value:"Garamond,serif"},
+  {label:"Helvetica",value:"'Helvetica Neue',Arial,sans-serif"},
 ];
 const DEFAULTS = {
-  bgFrom:"#3b4fd8", bgTo:"#a855f7",
-  surfaceColor:"rgba(255,255,255,0.15)",
-  accentColor:"#c084fc",
-  textColor:"#ffffff",
-  mutedColor:"rgba(255,255,255,0.65)",
-  cardColor:"rgba(196,181,253,0.35)",
+  bgFrom:"#3b4fd8",bgTo:"#a855f7",
+  accentColor:"#c084fc",textColor:"#ffffff",mutedColor:"rgba(255,255,255,0.65)",
+  statFinishedColor:"#34d399",statReadingColor:"#f97316",statTotalColor:"#a78bfa",
   fontFamily:"'Segoe UI',sans-serif"
 };
-
 const GENRE_ICON_OPTIONS = [
   {id:"book",path:"M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"},
   {id:"star",path:"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"},
@@ -43,13 +39,42 @@ const GENRE_ICON_OPTIONS = [
   {id:"flask",path:"M6 2v6l-4 10a2 2 0 0 0 1.87 2.71h12.26A2 2 0 0 0 18 18L14 8V2M6 2h12M9 2v3"},
   {id:"music",path:"M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm12 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"},
 ];
-const DEFAULT_GENRE_ICONS={"Fiction":"book","Non-Fiction":"brain","Fantasy":"moon","High Fantasy":"crown","Dark Fantasy":"ghost","Romantasy":"heart","Sci-Fi":"flask","Mystery":"compass","Thriller":"fire","Horror":"ghost","Gothic Horror":"moon","Dark Gothic Romance":"heart","Romance":"heart","Historical Romance":"crown","Historical Fiction":"crown","Contemporary Romance":"heart","Biography":"book","Memoir":"book","History":"crown","Self-Help":"brain","Philosophy":"brain","Poetry":"music","Graphic Novel":"star","Young Adult":"star","Middle Grade":"star","True Crime":"fire","Spirituality":"moon","Action":"sword","Dystopian":"fire","Royalty":"crown","Favorite":"star","Other":"book"};
-const DEFAULT_GENRE_COLORS={"Fiction":"#a78bfa","Non-Fiction":"#60a5fa","Fantasy":"#c084fc","High Fantasy":"#818cf8","Dark Fantasy":"#6d28d9","Romantasy":"#f472b6","Sci-Fi":"#22d3ee","Mystery":"#94a3b8","Thriller":"#f87171","Horror":"#991b1b","Gothic Horror":"#7c3aed","Dark Gothic Romance":"#db2777","Romance":"#fb7185","Historical Romance":"#fbbf24","Historical Fiction":"#d97706","Contemporary Romance":"#f97316","Biography":"#38bdf8","Memoir":"#06b6d4","History":"#d97706","Self-Help":"#4ade80","Philosophy":"#818cf8","Poetry":"#c084fc","Graphic Novel":"#fb923c","Young Adult":"#fbbf24","Middle Grade":"#4ade80","True Crime":"#f87171","Spirituality":"#818cf8","Action":"#f87171","Dystopian":"#a16207","Royalty":"#fbbf24","Favorite":"#f59e0b","Other":"#94a3b8"};
+const DEFAULT_GENRE_ICONS = {
+  "Fiction":"book","Non-Fiction":"brain","Fantasy":"moon","High Fantasy":"crown",
+  "Dark Fantasy":"ghost","Romantasy":"heart","Sci-Fi":"flask","Mystery":"compass",
+  "Thriller":"fire","Horror":"ghost","Gothic Horror":"moon","Dark Gothic Romance":"heart",
+  "Romance":"heart","Historical Romance":"crown","Historical Fiction":"crown",
+  "Contemporary Romance":"heart","Biography":"book","Memoir":"book","History":"crown",
+  "Self-Help":"brain","Philosophy":"brain","Poetry":"music","Graphic Novel":"star",
+  "Young Adult":"star","Middle Grade":"star","True Crime":"fire","Spirituality":"moon",
+  "Action":"sword","Dystopian":"fire","Royalty":"crown","Favorite":"star","Other":"book"
+};
+const DEFAULT_GENRE_COLORS = {
+  "Fiction":"#a78bfa","Non-Fiction":"#60a5fa","Fantasy":"#c084fc","High Fantasy":"#818cf8",
+  "Dark Fantasy":"#6d28d9","Romantasy":"#f472b6","Sci-Fi":"#22d3ee","Mystery":"#94a3b8",
+  "Thriller":"#f87171","Horror":"#991b1b","Gothic Horror":"#7c3aed","Dark Gothic Romance":"#db2777",
+  "Romance":"#fb7185","Historical Romance":"#fbbf24","Historical Fiction":"#d97706",
+  "Contemporary Romance":"#f97316","Biography":"#38bdf8","Memoir":"#06b6d4",
+  "History":"#d97706","Self-Help":"#4ade80","Philosophy":"#818cf8","Poetry":"#c084fc",
+  "Graphic Novel":"#fb923c","Young Adult":"#fbbf24","Middle Grade":"#4ade80",
+  "True Crime":"#f87171","Spirituality":"#818cf8","Action":"#f87171","Dystopian":"#a16207",
+  "Royalty":"#fbbf24","Favorite":"#f59e0b","Other":"#94a3b8"
+};
 
 const BKEY="blib_books_v6",TKEY="blib_theme_v5",UKEY="blib_user_v4",GKEY="blib_genres_v3",CGKEY="blib_custom_genres_v2";
 const loadArr=k=>{try{return JSON.parse(localStorage.getItem(k)||"[]")}catch{return[];}};
 const loadObj=(k,def)=>{try{return{...def,...JSON.parse(localStorage.getItem(k)||"{}")}}catch{return def;}};
 const sv=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+const glass=(extra={})=>({
+  background:"rgba(255,255,255,0.12)",
+  backdropFilter:"blur(16px)",
+  WebkitBackdropFilter:"blur(16px)",
+  border:"1px solid rgba(255,255,255,0.2)",
+  borderRadius:"20px",
+  boxShadow:"0 8px 32px rgba(0,0,0,0.2)",
+  ...extra
+});
 
 const SvgIcon=({path,size=16,color="currentColor",sw=2})=>(
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><path d={path}/></svg>
@@ -74,20 +99,10 @@ const ICONS={
   check:"M20 6L9 17l-5-5",
 };
 
-async function callClaude(prompt,system){
-  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":process.env.REACT_APP_ANTHROPIC_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system,messages:[{role:"user",content:prompt}]})});
-  const d=await r.json();return d.content?.[0]?.text||"";
-}
-async function searchOLFull(title){
-  try{const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1&fields=title,author_name,cover_i,number_of_pages_median`);const d=await r.json();const b=d.docs?.[0];if(!b)return null;return{author:b.author_name?.[0]||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:"",pages:b.number_of_pages_median||""};}catch{return null;}
-}
-
 const StarRating=({value,onChange})=>(
   <div style={{display:"flex",gap:"4px"}}>
     {[1,2,3,4,5].map(s=>(
-      <button key={s} onClick={()=>onChange(s)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"1.8rem",color:s<=value?"#fbbf24":"rgba(255,255,255,0.3)",padding:0,lineHeight:1,transition:"transform 0.1s",filter:s<=value?"drop-shadow(0 0 6px #fbbf24aa)":"none"}}
-        onMouseEnter={e=>e.currentTarget.style.transform="scale(1.2)"}
-        onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>★</button>
+      <button key={s} onClick={()=>onChange(s)} style={{background:"none",border:"none",cursor:"pointer",fontSize:"1.8rem",color:s<=value?"#fbbf24":"rgba(255,255,255,0.3)",padding:0,lineHeight:1,filter:s<=value?"drop-shadow(0 0 6px #fbbf24aa)":"none"}}>★</button>
     ))}
   </div>
 );
@@ -100,7 +115,7 @@ const BarChart=({data,color})=>{
         {data.map((d,i)=>(
           <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",height:"100%",gap:"4px"}}>
             {d.value>0&&<span style={{fontSize:"0.7rem",color:"rgba(255,255,255,0.7)",fontWeight:600}}>{d.value}</span>}
-            <div style={{width:"100%",background:d.value>0?`linear-gradient(to top, ${color}, ${color}88)`:"rgba(255,255,255,0.1)",borderRadius:"6px 6px 0 0",height:`${Math.max((d.value/max)*100,d.value>0?8:3)}%`,transition:"height 0.5s ease",boxShadow:d.value>0?`0 0 12px ${color}60`:""}}/>
+            <div style={{width:"100%",background:d.value>0?`linear-gradient(to top,${color},${color}88)`:"rgba(255,255,255,0.1)",borderRadius:"6px 6px 0 0",height:`${Math.max((d.value/max)*100,d.value>0?8:3)}%`,transition:"height 0.5s ease"}}/>
           </div>
         ))}
       </div>
@@ -123,7 +138,7 @@ const DonutChart=({data})=>{
   });
   return(
     <div style={{display:"flex",alignItems:"center",gap:"1.5rem",flexWrap:"wrap"}}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{flexShrink:0,filter:"drop-shadow(0 4px 16px rgba(0,0,0,0.3))"}}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{flexShrink:0}}>
         {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} opacity="0.9"/>)}
         <text x={cx} y={cy-6} textAnchor="middle" fontSize="18" fontWeight="700" fill="white">{total}</text>
         <text x={cx} y={cy+10} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.6)">books</text>
@@ -131,7 +146,7 @@ const DonutChart=({data})=>{
       <div style={{display:"flex",flexDirection:"column",gap:"6px",flex:1}}>
         {slices.slice(0,7).map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:"8px",fontSize:"0.8rem"}}>
-            <div style={{width:"10px",height:"10px",borderRadius:"50%",background:s.color,flexShrink:0,boxShadow:`0 0 6px ${s.color}`}}/>
+            <div style={{width:"10px",height:"10px",borderRadius:"50%",background:s.color,flexShrink:0}}/>
             <span style={{color:"rgba(255,255,255,0.8)",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.label}</span>
             <span style={{color:"rgba(255,255,255,0.5)",fontWeight:600}}>{s.value}</span>
           </div>
@@ -153,8 +168,8 @@ const LineChart=({data,color})=>{
       <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{overflow:"visible"}}>
         <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.4"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient></defs>
         <path d={areaD} fill="url(#lg)"/>
-        <path d={pathD} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{filter:`drop-shadow(0 0 6px ${color})`}}/>
-        {pts.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r="4" fill={color} style={{filter:`drop-shadow(0 0 4px ${color})`}}/>)}
+        <path d={pathD} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        {pts.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r="4" fill={color}/>)}
       </svg>
       <div style={{display:"flex",justifyContent:"space-between",marginTop:"6px"}}>
         {data.map((d,i)=><span key={i} style={{fontSize:"0.62rem",color:"rgba(255,255,255,0.45)"}}>{d.label}</span>)}
@@ -164,25 +179,115 @@ const LineChart=({data,color})=>{
 };
 
 const emptyForm={title:"",author:"",genres:[],status:"Currently Reading",rating:0,notes:"",date_read:"",cover_url:"",pages:""};
+const SPINES=["#e11d48","#7c3aed","#2563eb","#059669","#d97706","#0891b2","#9333ea","#b45309"];
 
-const OLDropdown=({results,searching,onSelect,glass,inp})=>{
-  if(!results.length&&!searching) return null;
+// Top-level component — defined outside App to prevent remounting on every keystroke
+const AddEditView=({editMode,addingTo,form,setForm,olResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
+  const inp=(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",...x});
+  const sel={width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"};
+  const lbl={fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"};
+  const btn=(bg,fg="#fff",x={})=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.6rem 1.3rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:bg,color:fg,boxShadow:"0 4px 14px rgba(0,0,0,0.25)",...x});
+  const toggleGenre=g=>setForm(f=>({...f,genres:f.genres.includes(g)?f.genres.filter(x=>x!==g):[...f.genres,g]}));
   return(
-    <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
-      {searching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
-      {results.map((b,i)=>(
-        <div key={i} onMouseDown={e=>{e.preventDefault();onSelect(b);}}
-          style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
-          onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
-          onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-          {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
-          <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
+    <div style={{...glass({borderRadius:"20px"}),padding:"1.75rem"}}>
+      <div style={{marginBottom:"1.25rem"}}>
+        <label style={lbl}>Book Title</label>
+        <div style={{display:"flex",gap:"0.6rem",position:"relative"}}>
+          <div style={{flex:1,position:"relative"}}>
+            <input
+              style={inp()}
+              placeholder="Search for a book..."
+              value={form.title}
+              onChange={e=>{
+                const v=e.target.value;
+                setForm(f=>({...f,title:v}));
+                clearTimeout(debRef.current);
+                debRef.current=setTimeout(()=>searchOL(v),500);
+              }}
+            />
+            {(olResults.length>0||olSearching)&&(
+              <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
+                {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
+                {olResults.map((b,i)=>(
+                  <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));}}
+                    style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
+                    onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
+                    <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <button style={btn("rgba(255,255,255,0.2)","#fff")} onClick={autoFill} disabled={aiLoading}>
+            <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?(fillStep||"Filling..."):"Auto-fill"}
+          </button>
         </div>
-      ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
+        <div><label style={lbl}>Author</label><input style={inp()} placeholder="Author name" value={form.author} onChange={e=>setForm(f=>({...f,author:e.target.value}))}/></div>
+        <div><label style={lbl}>Pages</label><input style={inp()} type="number" placeholder="Page count" value={form.pages} onChange={e=>setForm(f=>({...f,pages:e.target.value}))}/></div>
+        <div><label style={lbl}>Status</label><select style={sel} value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))}>{STATUSES.map(st=><option key={st}>{st}</option>)}</select></div>
+        <div><label style={lbl}>Date Read</label><input style={inp()} type="date" value={form.date_read} onChange={e=>setForm(f=>({...f,date_read:e.target.value}))}/></div>
+        <div style={{gridColumn:"1/-1"}}><label style={lbl}>Rating</label><StarRating value={form.rating} onChange={v=>setForm(f=>({...f,rating:v}))}/></div>
+      </div>
+      <div style={{marginBottom:"1.25rem"}}>
+        <label style={lbl}>Genres</label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
+          {allGenres.map(g=>{
+            const sel2=form.genres.includes(g);const c=colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8";
+            return<button key={g} onClick={()=>toggleGenre(g)} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"0.3rem 0.8rem",borderRadius:"999px",border:`1.5px solid ${sel2?c:"rgba(255,255,255,0.2)"}`,background:sel2?c+"30":"rgba(255,255,255,0.05)",color:"#fff",cursor:"pointer",fontSize:"0.8rem",fontWeight:600,boxShadow:sel2?`0 0 10px ${c}50`:""}}>
+              <GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}
+            </button>;
+          })}
+        </div>
+      </div>
+      <div style={{marginBottom:"1.25rem"}}>
+        <label style={lbl}>Cover Image</label>
+        {form.cover_url&&!manualCover
+          ?<div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}><img src={form.cover_url} style={{height:"64px",borderRadius:"10px"}} alt="cover" onError={e=>e.target.style.display="none"}/><button style={btn("rgba(255,255,255,0.15)","#fff",{fontSize:"0.8rem",padding:"0.3rem 0.75rem"})} onClick={()=>setManualCover(true)}>Change</button></div>
+          :<input style={inp()} placeholder="Paste image URL or leave blank" value={form.cover_url} onChange={e=>setForm(f=>({...f,cover_url:e.target.value}))}/>}
+      </div>
+      <div style={{marginBottom:"1.5rem"}}><label style={lbl}>Notes / Summary</label><textarea style={{...inp(),minHeight:"90px",resize:"vertical"}} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Your thoughts..."/></div>
+      <div style={{display:"flex",gap:"0.75rem"}}>
+        <button style={btn("rgba(255,255,255,0.95)","#7c3aed")} onClick={saveBook}>{editMode?"Save Changes":"Add Book"}</button>
+        <button style={btn("rgba(255,255,255,0.1)","#fff")} onClick={onBack}>Cancel</button>
+      </div>
     </div>
   );
 };
-const SPINES=["#e11d48","#7c3aed","#2563eb","#059669","#d97706","#0891b2","#9333ea","#b45309"];
+
+const BookCard=({book,iconMap,colorMap,markFinished,setSelected,setAiResult,setView})=>{
+  const isReading=book.status==="Currently Reading";
+  return(
+    <div style={{...glass({borderRadius:"20px"}),overflow:"hidden",cursor:"pointer",transition:"all 0.2s"}}
+      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-6px) scale(1.02)";e.currentTarget.style.boxShadow="0 20px 50px rgba(0,0,0,0.4)";}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0) scale(1)";e.currentTarget.style.boxShadow=glass().boxShadow;}}>
+      <div onClick={()=>{setSelected(book);setAiResult("");setView("detail");}}>
+        <div style={{width:"100%",paddingTop:"148%",position:"relative",overflow:"hidden",background:book.spineColor||"#7c3aed",borderRadius:"20px 20px 0 0"}}>
+          {book.cover_url&&<img src={book.cover_url} alt="cover" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>e.target.style.display="none"}/>}
+          {!book.cover_url&&<div style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={40} color="rgba(255,255,255,0.4)"/></div>}
+        </div>
+        <div style={{padding:"14px 14px 10px"}}>
+          <div style={{fontWeight:700,fontSize:"1rem",lineHeight:1.3,marginBottom:"4px",overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{book.title}</div>
+          {book.author&&<div style={{color:"rgba(255,255,255,0.6)",fontSize:"0.82rem",marginBottom:"8px"}}>{book.author}</div>}
+          <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginBottom:"8px"}}>
+            {(book.genres||[]).map(g=>{const c=colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8";return<span key={g} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:c+"30",color:"#fff",border:`1.5px solid ${c}60`}}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}</span>;})}
+          </div>
+          {book.rating>0&&<div style={{color:"#fbbf24",fontSize:"0.9rem",letterSpacing:"2px"}}>{"★".repeat(book.rating)}{"☆".repeat(5-book.rating)}</div>}
+        </div>
+      </div>
+      {isReading&&(
+        <div style={{padding:"0 14px 14px"}}>
+          <button style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.45rem 1rem",borderRadius:"12px",border:"1px solid rgba(16,185,129,0.5)",cursor:"pointer",fontWeight:700,fontSize:"0.82rem",background:"rgba(16,185,129,0.3)",color:"#fff",width:"100%",justifyContent:"center"}} onClick={e=>{e.stopPropagation();markFinished(book);}}>
+            <SvgIcon path={ICONS.check} size={13} color="#fff"/>Mark as Finished
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function App(){
   const [books,setBooks]=useState([]);
@@ -199,7 +304,6 @@ export default function App(){
   const [aiLoading,setAiLoading]=useState(false);
   const [fillStep,setFillStep]=useState("");
   const [aiResult,setAiResult]=useState("");
-  const [mood,setMood]=useState("");
   const [toast,setToast]=useState({msg:"",type:"success"});
   const [editMode,setEditMode]=useState(false);
   const [olResults,setOlResults]=useState([]);
@@ -212,13 +316,6 @@ export default function App(){
   const [newGenreName,setNewGenreName]=useState("");
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
   const debRef=useRef(null);
-
-  const handleTitleChange = e => {
-    const v = e.target.value;
-    setForm(f => ({...f, title: v}));
-    clearTimeout(debRef.current);
-    debRef.current = setTimeout(() => searchOL(v), 500);
-  };
 
   useEffect(()=>{
     setBooks(loadArr(BKEY));setTheme(loadObj(TKEY,DEFAULTS));
@@ -234,44 +331,51 @@ export default function App(){
   const updGenreIcons=m=>{setGenreIcons(m);sv(GKEY+"_icons",m);};
   const updGenreColors=m=>{setGenreColors(m);sv(GKEY+"_colors",m);};
   const updCustomGenres=g=>{setCustomGenres(g);sv(CGKEY,g);};
+
   const T=theme;
   const allGenres=[...BUILT_IN_GENRES,...customGenres];
   const iconMap={...DEFAULT_GENRE_ICONS,...genreIcons};
   const colorMap={...DEFAULT_GENRE_COLORS,...genreColors};
 
-  const glass = useRef(null);
-  glass.current = (extra={})=>({background:"rgba(255,255,255,0.12)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:"20px",boxShadow:"0 8px 32px rgba(0,0,0,0.2)",...extra});
-  const glassF = (extra={}) => glass.current(extra);
-
   const css={
-    app:appStyle,
+    app:{fontFamily:T.fontFamily,minHeight:"100vh",background:`linear-gradient(135deg, ${T.bgFrom} 0%, ${T.bgTo} 100%)`,color:T.textColor,position:"relative"},
     hdr:{...glass({borderRadius:0,borderLeft:"none",borderRight:"none",borderTop:"none"}),padding:"0 2.5rem",height:"72px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100},
     logo:{fontSize:"1.5rem",fontWeight:800,color:"#fff",letterSpacing:"-0.5px",textShadow:"0 2px 12px rgba(0,0,0,0.3)"},
-    pill:(a)=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.55rem 1.3rem",borderRadius:"999px",border:a?"none":"1.5px solid rgba(255,255,255,0.3)",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:a?"rgba(255,255,255,0.95)":"rgba(255,255,255,0.1)",color:a?"#7c3aed":"rgba(255,255,255,0.85)",transition:"all 0.18s",boxShadow:a?"0 4px 16px rgba(0,0,0,0.25), 0 2px 0 rgba(0,0,0,0.15)":"none",transform:a?"translateY(-1px)":"none"}),
+    pill:(a)=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.55rem 1.3rem",borderRadius:"999px",border:a?"none":"1.5px solid rgba(255,255,255,0.3)",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:a?"rgba(255,255,255,0.95)":"rgba(255,255,255,0.1)",color:a?"#7c3aed":"rgba(255,255,255,0.85)",transition:"all 0.18s",boxShadow:a?"0 4px 16px rgba(0,0,0,0.25)":"none",transform:a?"translateY(-1px)":"none"}),
     main:{padding:"2.5rem",maxWidth:"1200px",margin:"0 auto"},
-    statCard:(color)=>({...glass({borderRadius:"24px"}),padding:"1.75rem 2rem",cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden"}),
-    bookCard:{...glass({borderRadius:"20px"}),overflow:"hidden",cursor:"pointer",transition:"all 0.2s"},
-    inp:(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",backdropFilter:"blur(8px)",...x}),
+    inp:(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",...x}),
     sel:{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"},
     lbl:{fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"},
-    btn:(bg,fg="#fff",x={})=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.6rem 1.3rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:bg,color:fg,boxShadow:"0 4px 14px rgba(0,0,0,0.25), 0 2px 0 rgba(0,0,0,0.15)",transition:"all 0.15s",...x}),
-    tag:(genre)=>{const c=colorMap[genre]||DEFAULT_GENRE_COLORS[genre]||"#94a3b8";return{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:c+"30",color:"#fff",border:`1.5px solid ${c}60`,boxShadow:`0 0 8px ${c}40`};},
-    toast:(tp)=>({position:"fixed",bottom:"1.5rem",right:"1.5rem",background:tp==="error"?"rgba(239,68,68,0.95)":"rgba(16,185,129,0.95)",backdropFilter:"blur(12px)",color:"#fff",padding:"0.8rem 1.4rem",borderRadius:"999px",fontWeight:700,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.3)"}),
+    btn:(bg,fg="#fff",x={})=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.6rem 1.3rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:bg,color:fg,boxShadow:"0 4px 14px rgba(0,0,0,0.25)",transition:"all 0.15s",...x}),
+    tag:(genre)=>{const c=colorMap[genre]||"#94a3b8";return{display:"inline-flex",alignItems:"center",gap:"5px",padding:"0.28rem 0.75rem",borderRadius:"999px",fontSize:"0.78rem",fontWeight:700,background:c+"30",color:"#fff",border:`1.5px solid ${c}60`};},
+    toast:(tp)=>({position:"fixed",bottom:"1.5rem",right:"1.5rem",background:tp==="error"?"rgba(239,68,68,0.95)":"rgba(16,185,129,0.95)",backdropFilter:"blur(12px)",color:"#fff",padding:"0.8rem 1.4rem",borderRadius:"999px",fontWeight:700,zIndex:9999}),
     aiBox:{...glass({borderRadius:"16px"}),padding:"1.5rem",marginTop:"1.25rem",lineHeight:1.8,whiteSpace:"pre-wrap",fontSize:"0.95rem"},
   };
 
   const searchOL=async q=>{
     if(!q.trim()||q.length<2){setOlResults([]);return;}
     setOlSearching(true);
-    try{const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=6&fields=title,author_name,cover_i,number_of_pages_median`);const d=await r.json();const mapped=(d.docs||[]).map(b=>({title:b.title,author:b.author_name?.[0]||"Unknown",pages:b.number_of_pages_median||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:"",cover_url_large:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:""}));setOlResults(mapped);}
-    catch{setOlResults([]);}setOlSearching(false);
+    try{
+      const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=6&fields=title,author_name,cover_i,number_of_pages_median`);
+      const d=await r.json();
+      const mapped=(d.docs||[]).map(b=>({title:b.title,author:b.author_name?.[0]||"Unknown",pages:b.number_of_pages_median||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:"",cover_url_large:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:""}));
+      setOlResults(mapped);
+    }catch{setOlResults([]);}
+    setOlSearching(false);
   };
+
+  async function searchOLFull(title){
+    try{const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1&fields=title,author_name,cover_i,number_of_pages_median`);const d=await r.json();const b=d.docs?.[0];if(!b)return null;return{author:b.author_name?.[0]||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:"",pages:b.number_of_pages_median||""};}catch{return null;}
+  }
 
   const autoFill=async()=>{
     if(!form.title.trim())return showToast("Enter a title first!","error");
     setAiLoading(true);setFillStep("Searching...");
     try{
-      const[olData,aiRes]=await Promise.all([searchOLFull(form.title),callClaude(`Book: "${form.title}"${form.author?`, by "${form.author}"`:""}`,`Return ONLY raw JSON: genre (one of: ${allGenres.join(",")}), notes (2-sentence summary), pages (integer). No markdown.`)]);
+      const[olData,aiRes]=await Promise.all([
+        searchOLFull(form.title),
+        fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":process.env.REACT_APP_ANTHROPIC_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:`Return ONLY raw JSON: genre (one of: ${allGenres.join(",")}), notes (2-sentence summary). No markdown.`,messages:[{role:"user",content:`Book: "${form.title}"${form.author?`, by "${form.author}"`:""}` }]})}).then(r=>r.json()).then(d=>d.content?.[0]?.text||"")
+      ]);
       if(olData){setForm(f=>({...f,...olData,title:form.title}));setFillStep("Cover found!");}
       const aiData=JSON.parse(aiRes.replace(/```json|```/g,"").trim());
       setForm(f=>({...f,...(olData||{}),...aiData,genres:aiData.genre?[aiData.genre]:f.genres,title:form.title}));
@@ -282,14 +386,37 @@ export default function App(){
 
   const saveBook=()=>{
     if(!form.title.trim())return showToast("Title is required!","error");
-    if(editMode&&selected){updBooks(books.map(b=>b.id===selected.id?{...b,...form}:b));setSelected({...selected,...form});showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);}
-    else{updBooks([{...form,id:Date.now().toString(),created_at:new Date().toISOString(),spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]},...books]);showToast("Book added!");setForm(emptyForm);setView(addingTo);}
+    if(editMode&&selected){
+      updBooks(books.map(b=>b.id===selected.id?{...b,...form}:b));
+      setSelected({...selected,...form});
+      showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);
+    }else{
+      updBooks([{...form,id:Date.now().toString(),created_at:new Date().toISOString(),spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]},...books]);
+      showToast("Book added!");setForm(emptyForm);setView(addingTo);
+    }
   };
 
-  const markFinished=book=>{const today=new Date().toISOString().split("T")[0];updBooks(books.map(b=>b.id===book.id?{...b,status:"Finished",date_read:b.date_read||today}:b));showToast(`"${book.title}" marked as finished!`);};
-  const deleteBook=id=>{if(!window.confirm("Delete this book?"))return;updBooks(books.filter(b=>b.id!==id));showToast("Deleted.");setView("bookshelf");};
-  const toggleGenre=g=>setForm(f=>({...f,genres:f.genres.includes(g)?f.genres.filter(x=>x!==g):[...f.genres,g]}));
-  const addCustomGenre=()=>{const name=newGenreName.trim();if(!name)return showToast("Enter a name","error");if(allGenres.includes(name))return showToast("Already exists","error");updCustomGenres([...customGenres,name]);updGenreColors({...genreColors,[name]:newGenreColor});updGenreIcons({...genreIcons,[name]:"book"});setNewGenreName("");showToast(`Added "${name}"!`);};
+  const markFinished=book=>{
+    const today=new Date().toISOString().split("T")[0];
+    updBooks(books.map(b=>b.id===book.id?{...b,status:"Finished",date_read:b.date_read||today}:b));
+    showToast(`"${book.title}" marked as finished!`);
+  };
+
+  const deleteBook=id=>{
+    if(!window.confirm("Delete this book?"))return;
+    updBooks(books.filter(b=>b.id!==id));
+    showToast("Deleted.");setView("bookshelf");
+  };
+
+  const addCustomGenre=()=>{
+    const name=newGenreName.trim();
+    if(!name)return showToast("Enter a name","error");
+    if(allGenres.includes(name))return showToast("Already exists","error");
+    updCustomGenres([...customGenres,name]);
+    updGenreColors({...genreColors,[name]:newGenreColor});
+    updGenreIcons({...genreIcons,[name]:"book"});
+    setNewGenreName("");showToast(`Added "${name}"!`);
+  };
 
   const finished=books.filter(b=>b.status==="Finished");
   const reading=books.filter(b=>b.status==="Currently Reading");
@@ -320,7 +447,7 @@ export default function App(){
           {l}
         </button>
       ))}
-      <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginLeft:"4px"}),fontSize:"0.88rem"}} onClick={()=>{setForm({...emptyForm,status:view==="nextup"?"Want to Read":"Currently Reading"});setAddingTo(view==="nextup"?"nextup":"bookshelf");setEditMode(false);setOlResults([]);setManualCover(false);setView("add");}}>
+      <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginLeft:"4px"})}} onClick={()=>{setForm({...emptyForm,status:view==="nextup"?"Want to Read":"Currently Reading"});setAddingTo(view==="nextup"?"nextup":"bookshelf");setEditMode(false);setOlResults([]);setManualCover(false);setView("add");}}>
         <SvgIcon path={ICONS.plus} size={14} color="#7c3aed"/>Add Book
       </button>
     </div>
@@ -333,87 +460,37 @@ export default function App(){
     </div>
   );
 
-
-
-  const FormSection=({children,style={}})=><div style={{...glass({borderRadius:"20px"}),padding:"1.75rem",...style}}>{children}</div>;
-
-  // ── ONBOARD ──
   if(showOnboard)return(
     <div style={{...css.app,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh"}}>
       <div style={{...glass({borderRadius:"28px"}),maxWidth:"440px",width:"90%",padding:"3.5rem",textAlign:"center"}}>
-        <div style={{fontSize:"3rem",marginBottom:"0.5rem"}}>📚</div>
-        <h2 style={{margin:"0 0 0.5rem",fontWeight:800,fontSize:"1.8rem",textShadow:"0 2px 12px rgba(0,0,0,0.3)"}}>Welcome to your Library</h2>
-        <p style={{color:"rgba(255,255,255,0.65)",marginBottom:"2rem",fontSize:"1rem"}}>What should we call you?</p>
+        <SvgIcon path={ICONS.book} size={44} color="#c084fc"/>
+        <h2 style={{margin:"1rem 0 0.5rem",fontWeight:800,fontSize:"1.8rem"}}>Welcome to your Library</h2>
+        <p style={{color:"rgba(255,255,255,0.65)",marginBottom:"2rem"}}>What should we call you?</p>
         <input style={{...css.inp(),textAlign:"center",fontSize:"1.1rem",marginBottom:"1rem"}} placeholder="Your name..." value={onboardName} onChange={e=>setOnboardName(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&onboardName.trim()){updUser({name:onboardName.trim()});setShowOnboard(false);}}} autoFocus/>
         <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{width:"100%",justifyContent:"center",padding:"0.85rem",fontSize:"1.05rem",borderRadius:"999px"})}} onClick={()=>{if(onboardName.trim()){updUser({name:onboardName.trim()});setShowOnboard(false);}}}>Enter my Library</button>
       </div>
     </div>
   );
 
-  // ── ADD/EDIT ──
   if(view==="add"||(view==="detail"&&editMode))return(
     <div style={css.app}>
       {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
       <Hdr backTo={editMode?"detail":addingTo}/>
       <div style={css.main}>
-        <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.4rem",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>{editMode?"Edit Book":`Add to ${addingTo==="nextup"?"Next-Up":"Bookshelf"}`}</h2>
-        <FormSection>
-          <div style={{marginBottom:"1.25rem"}}>
-            <label style={css.lbl}>Book Title</label>
-            <div style={{display:"flex",gap:"0.6rem",position:"relative"}}>
-              <div style={{flex:1,position:"relative"}}>
-                <input style={css.inp()} placeholder="Search for a book..." value={form.title} onChange={e=>{setForm(f=>({...f,title:e.target.value}));clearTimeout(debRef.current);  debRef.current=setTimeout(()=>searchOL(e.target.value),500);}}/>
-                {(olResults.length>0||olSearching)&&(
-                  <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
-                    {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
-                    {olResults.map((b,i)=>(
-                      <div key={i} onClick={()=>{setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}} style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
-                        onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
-                        onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                        {b.cover_url?<img src={b.cover_url} style={{width:"34px",height:"48px",objectFit:"cover",borderRadius:"6px",flexShrink:0}} alt=""/>:<div style={{width:"34px",height:"48px",background:"rgba(255,255,255,0.1)",borderRadius:"6px",flexShrink:0}}/>}
-                        <div><div style={{fontWeight:600,fontSize:"0.9rem"}}>{b.title}</div><div style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem"}}>{b.author}{b.pages?` · ${b.pages}pp`:""}</div></div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-                <button style={css.btn("rgba(255,255,255,0.2)","#fff")} onClick={autoFill} disabled={aiLoading}>
-                  <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?(fillStep||"Filling..."):"Auto-fill"}
-                </button>
-            </div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
-            <div><label style={css.lbl}>Author</label><input style={css.inp()} placeholder="Author name" value={form.author} onChange={e=>setForm(f=>({...f,author:e.target.value}))}/></div>
-            <div><label style={css.lbl}>Pages</label><input style={css.inp()} type="number" placeholder="Page count" value={form.pages} onChange={e=>setForm(f=>({...f,pages:e.target.value}))}/></div>
-            <div><label style={css.lbl}>Status</label><select style={css.sel} value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))}>{STATUSES.map(st=><option key={st}>{st}</option>)}</select></div>
-            <div><label style={css.lbl}>Date Read</label><input style={css.inp()} type="date" value={form.date_read} onChange={e=>setForm(f=>({...f,date_read:e.target.value}))}/></div>
-            <div style={{gridColumn:"1/-1"}}><label style={css.lbl}>Rating</label><StarRating value={form.rating} onChange={v=>setForm(f=>({...f,rating:v}))}/></div>
-          </div>
-          <div style={{marginBottom:"1.25rem"}}>
-            <label style={css.lbl}>Genres</label>
-            <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
-              {allGenres.map(g=>{
-                const sel=form.genres.includes(g);const c=colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8";
-                return<button key={g} onClick={()=>toggleGenre(g)} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"0.3rem 0.8rem",borderRadius:"999px",border:`1.5px solid ${sel?c:"rgba(255,255,255,0.2)"}`,background:sel?c+"30":"rgba(255,255,255,0.05)",color:"#fff",cursor:"pointer",fontSize:"0.8rem",fontWeight:600,transition:"all 0.12s",boxShadow:sel?`0 0 10px ${c}50`:""}}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={10}/>{g}</button>;
-              })}
-            </div>
-          </div>
-          <div style={{marginBottom:"1.25rem"}}>
-            <label style={css.lbl}>Cover Image</label>
-            {form.cover_url&&!manualCover?<div style={{display:"flex",alignItems:"center",gap:"0.6rem"}}><img src={form.cover_url} style={{height:"64px",borderRadius:"10px",boxShadow:"0 4px 12px rgba(0,0,0,0.3)"}} alt="cover" onError={e=>e.target.style.display="none"}/><button style={css.btn("rgba(255,255,255,0.15)","#fff",{fontSize:"0.8rem",padding:"0.3rem 0.75rem"})} onClick={()=>setManualCover(true)}>Change</button></div>
-            :<input style={css.inp()} placeholder="Paste image URL or leave blank" value={form.cover_url} onChange={e=>setForm(f=>({...f,cover_url:e.target.value}))}/>}
-          </div>
-          <div style={{marginBottom:"1.5rem"}}><label style={css.lbl}>Notes / Summary</label><textarea style={{...css.inp(),minHeight:"90px",resize:"vertical"}} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Your thoughts..."/></div>
-          <div style={{display:"flex",gap:"0.75rem"}}>
-            <button style={css.btn("rgba(255,255,255,0.95)","#7c3aed")} onClick={saveBook}>{editMode?"Save Changes":"Add Book"}</button>
-            <button style={css.btn("rgba(255,255,255,0.1)","#fff")} onClick={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}>Cancel</button>
-          </div>
-        </FormSection>
+        <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.4rem"}}>{editMode?"Edit Book":`Add to ${addingTo==="nextup"?"Next-Up":"Bookshelf"}`}</h2>
+        <AddEditView
+          editMode={editMode} addingTo={addingTo} form={form} setForm={setForm}
+          olResults={olResults} olSearching={olSearching} searchOL={searchOL}
+          autoFill={autoFill} aiLoading={aiLoading} fillStep={fillStep}
+          allGenres={allGenres} colorMap={colorMap} iconMap={iconMap}
+          manualCover={manualCover} setManualCover={setManualCover}
+          saveBook={saveBook} STATUSES={STATUSES} debRef={debRef}
+          onBack={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}
+        />
       </div>
     </div>
   );
 
-  // ── DETAIL ──
   if(view==="detail"&&selected){
     const book=books.find(b=>b.id===selected.id)||selected;
     const backTo=book.status==="Want to Read"?"nextup":book.status==="Finished"?"finished":"bookshelf";
@@ -429,21 +506,17 @@ export default function App(){
                 :<div style={{width:"220px",height:"310px",background:book.spineColor||"#7c3aed",borderRadius:"18px",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 20px 50px rgba(0,0,0,0.4)"}}><SvgIcon path={ICONS.book} size={56} color="rgba(255,255,255,0.4)"/></div>}
             </div>
             <div style={{flex:1,minWidth:"240px"}}>
-              <h1 style={{margin:"0 0 0.4rem",fontSize:"2.2rem",fontWeight:800,lineHeight:1.15,letterSpacing:"-0.5px",textShadow:"0 2px 12px rgba(0,0,0,0.3)"}}>{book.title}</h1>
+              <h1 style={{margin:"0 0 0.4rem",fontSize:"2.2rem",fontWeight:800,lineHeight:1.15,letterSpacing:"-0.5px"}}>{book.title}</h1>
               {book.author&&<p style={{color:"rgba(255,255,255,0.7)",margin:"0 0 1.25rem",fontSize:"1.15rem"}}>by {book.author}</p>}
               <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"1.25rem"}}>
                 {(book.genres||[]).map(g=><span key={g} style={css.tag(g)}><GenreIcon genre={g} iconMap={iconMap} colorMap={colorMap} size={12}/>{g}</span>)}
               </div>
-              {book.rating>0&&<div style={{color:"#fbbf24",fontSize:"1.6rem",marginBottom:"0.75rem",letterSpacing:"3px",textShadow:"0 0 12px #fbbf24aa"}}>{"★".repeat(book.rating)}{"☆".repeat(5-book.rating)}</div>}
+              {book.rating>0&&<div style={{color:"#fbbf24",fontSize:"1.6rem",marginBottom:"0.75rem",letterSpacing:"3px"}}>{"★".repeat(book.rating)}{"☆".repeat(5-book.rating)}</div>}
               <div style={{display:"flex",gap:"1.5rem",fontSize:"0.9rem",color:"rgba(255,255,255,0.55)",marginBottom:"1.5rem"}}>
                 {book.pages&&<span>{book.pages} pages</span>}
                 {book.date_read&&<span>Finished {book.date_read}</span>}
               </div>
-              {book.notes&&(
-                <div style={{...glass({borderRadius:"16px"}),padding:"1.25rem",marginBottom:"1.5rem"}}>
-                  <p style={{margin:0,lineHeight:1.75,fontSize:"1rem",color:"rgba(255,255,255,0.85)"}}>{book.notes}</p>
-                </div>
-              )}
+              {book.notes&&<div style={{...glass({borderRadius:"16px"}),padding:"1.25rem",marginBottom:"1.5rem"}}><p style={{margin:0,lineHeight:1.75,fontSize:"1rem"}}>{book.notes}</p></div>}
               <div style={{display:"flex",gap:"0.75rem",flexWrap:"wrap"}}>
                 <button style={css.btn("rgba(255,255,255,0.95)","#7c3aed")} onClick={()=>{setForm({title:book.title,author:book.author||"",genres:book.genres||[],status:book.status,rating:book.rating||0,notes:book.notes||"",date_read:book.date_read||"",cover_url:book.cover_url||"",pages:String(book.pages||"")});setEditMode(true);setManualCover(false);}}>
                   <SvgIcon path={ICONS.edit} size={14} color="#7c3aed"/>Edit
@@ -453,7 +526,6 @@ export default function App(){
                     <SvgIcon path={ICONS.check} size={14} color="#fff"/>Mark as Finished
                   </button>
                 )}
-
                 <button style={css.btn("rgba(239,68,68,0.25)","#fff",{border:"1px solid rgba(239,68,68,0.4)"})} onClick={()=>deleteBook(book.id)}>
                   <SvgIcon path={ICONS.trash} size={14} color="#fff"/>Delete
                 </button>
@@ -466,7 +538,6 @@ export default function App(){
     );
   }
 
-  // ── FINISHED ──
   if(view==="finished"){
     const rows=[];for(let i=0;i<finished.length;i+=8)rows.push(finished.slice(i,i+8));
     return(
@@ -474,9 +545,9 @@ export default function App(){
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
         <Hdr/>
         <div style={css.main}>
-          <h2 style={{fontWeight:800,margin:"0 0 0.3rem",fontSize:"1.6rem",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>Finished</h2>
-          <p style={{color:"rgba(255,255,255,0.55)",margin:"0 0 2rem",fontSize:"1rem"}}>{finished.length} book{finished.length!==1?"s":""} completed</p>
-          {finished.length===0?(<div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}><SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/><p style={{marginTop:"1rem",fontSize:"1rem"}}>No finished books yet</p></div>)
+          <h2 style={{fontWeight:800,margin:"0 0 0.3rem",fontSize:"1.6rem"}}>Finished</h2>
+          <p style={{color:"rgba(255,255,255,0.55)",margin:"0 0 2rem"}}>{finished.length} book{finished.length!==1?"s":""} completed</p>
+          {finished.length===0?(<div style={{textAlign:"center",marginTop:"4rem",color:"rgba(255,255,255,0.4)"}}><SvgIcon path={ICONS.shelves} size={48} color="rgba(255,255,255,0.2)"/><p style={{marginTop:"1rem"}}>No finished books yet</p></div>)
           :rows.map((row,ri)=>(
             <div key={ri} style={{marginBottom:"3rem"}}>
               <div style={{display:"flex",alignItems:"flex-end",gap:"4px",padding:"0 4px"}}>
@@ -490,7 +561,7 @@ export default function App(){
                 );})}
                 {row.length<8&&[...Array(8-row.length)].map((_,i)=><div key={i} style={{flex:"1",minWidth:"50px",maxWidth:"90px"}}/>)}
               </div>
-              <div style={{height:"14px",background:"rgba(255,255,255,0.15)",borderRadius:"3px",margin:"3px 0 0",boxShadow:"0 4px 12px rgba(0,0,0,0.2)"}}/>
+              <div style={{height:"14px",background:"rgba(255,255,255,0.15)",borderRadius:"3px",margin:"3px 0 0"}}/>
             </div>
           ))}
         </div>
@@ -498,7 +569,6 @@ export default function App(){
     );
   }
 
-  // ── STATS ──
   if(view==="stats"){
     const chartData=statPeriod==="month"?getMonthlyData():getYearlyData();
     const donutData=topGenres.map(([g,c])=>({label:g,value:c,color:colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8"}));
@@ -507,13 +577,13 @@ export default function App(){
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
         <Hdr/>
         <div style={css.main}>
-          <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>Reading Stats</h2>
+          <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem"}}>Reading Stats</h2>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:"14px",marginBottom:"1.5rem"}}>
-            {[["Books Finished",finished.length,"#a78bfa"],["Pages Read",totalPages.toLocaleString(),"#60a5fa"],["Avg Rating",avgRating,"#fbbf24"],["This Month",thisMonth,"#34d399"],["Reading Now",reading.length,"#f97316"]].map(([label,val,color])=>(
-              <div key={label} style={{...glass({borderRadius:"20px"}),padding:"1.5rem",position:"relative",overflow:"hidden"}}>
+            {[["Books Finished",finished.length,T.statFinishedColor],["Pages Read",totalPages.toLocaleString(),T.accentColor],["Avg Rating",avgRating,"#fbbf24"],["This Month",thisMonth,T.statReadingColor],["Reading Now",reading.length,T.statReadingColor]].map(([label,val,color])=>(
+              <div key={label} style={{...glass({borderRadius:"20px"}),padding:"1.5rem",position:"relative",overflow:"hidden",textAlign:"center"}}>
                 <div style={{position:"absolute",top:"-20px",right:"-20px",width:"80px",height:"80px",borderRadius:"50%",background:color,opacity:0.15}}/>
-                <div style={{fontSize:"2rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 20px ${color}80`}}>{val}</div>
-                <div style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.55)",marginTop:"0.4rem",fontWeight:600}}>{label}</div>
+                <div style={{fontSize:"2.5rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 20px ${color}80`}}>{val}</div>
+                <div style={{fontSize:"0.85rem",color:"rgba(255,255,255,0.6)",marginTop:"0.5rem",fontWeight:600}}>{label}</div>
               </div>
             ))}
           </div>
@@ -541,15 +611,14 @@ export default function App(){
     );
   }
 
-  // ── SETTINGS ──
   if(view==="settings"){
-    const colorFields=[["bgFrom","Gradient Start"],["bgTo","Gradient End"],["accentColor","Accent"],["textColor","Text"],["mutedColor","Muted Text"]];
+    const colorFields=[["bgFrom","Gradient Start"],["bgTo","Gradient End"],["accentColor","Accent"],["textColor","Text"],["mutedColor","Muted Text"],["statFinishedColor","Finished Stat"],["statReadingColor","Reading Stat"],["statTotalColor","Total Stat"]];
     return(
       <div style={css.app}>
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
         <Hdr/>
         <div style={css.main}>
-          <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem",textShadow:"0 2px 8px rgba(0,0,0,0.2)"}}>Settings</h2>
+          <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.6rem"}}>Settings</h2>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1.25rem"}}>
             <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
               <h3 style={{margin:"0 0 1rem",fontWeight:700,fontSize:"0.85rem",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"0.07em"}}>Profile</h3>
@@ -562,7 +631,7 @@ export default function App(){
             <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
               <h3 style={{margin:"0 0 1rem",fontWeight:700,fontSize:"0.85rem",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"0.07em"}}>Font</h3>
               <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
-                {FONTS.map(f=><div key={f.value} onClick={()=>updTheme({...T,fontFamily:f.value})} style={{padding:"0.5rem 0.85rem",borderRadius:"12px",cursor:"pointer",fontFamily:f.value,border:`1.5px solid ${T.fontFamily===f.value?"rgba(255,255,255,0.6)":"rgba(255,255,255,0.15)"}`,background:T.fontFamily===f.value?"rgba(255,255,255,0.15)":"transparent",fontSize:"0.9rem",transition:"all 0.12s"}}>{f.label}</div>)}
+                {FONTS.map(f=><div key={f.value} onClick={()=>updTheme({...T,fontFamily:f.value})} style={{padding:"0.5rem 0.85rem",borderRadius:"12px",cursor:"pointer",fontFamily:f.value,border:`1.5px solid ${T.fontFamily===f.value?"rgba(255,255,255,0.6)":"rgba(255,255,255,0.15)"}`,background:T.fontFamily===f.value?"rgba(255,255,255,0.15)":"transparent",fontSize:"0.9rem"}}>{f.label}</div>)}
               </div>
             </div>
             <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
@@ -610,9 +679,6 @@ export default function App(){
     );
   }
 
-
-
-  // ── BOOKSHELF / NEXT-UP ──
   const isNextUp=view==="nextup";
   const displayList=applyFilters(isNextUp?nextUp:reading);
   return(
@@ -622,7 +688,7 @@ export default function App(){
       <div style={css.main}>
         {!isNextUp&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"14px",marginBottom:"2rem"}}>
-            {[["Total Books",books.length,"#a78bfa","bookshelf"],["Finished",finished.length,"#34d399","finished"],["Reading Now",reading.length,"#f97316","bookshelf"]].map(([label,val,color,linkTo])=>(
+            {[["Total Books",books.length,T.statTotalColor,"bookshelf"],["Finished",finished.length,T.statFinishedColor,"finished"],["Reading Now",reading.length,T.statReadingColor,"bookshelf"]].map(([label,val,color,linkTo])=>(
               <div key={label} onClick={()=>setView(linkTo)} style={{...glass({borderRadius:"20px"}),padding:"1.75rem 2rem",cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:"120px"}}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px ${color}40`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow=glass().boxShadow;}}>
@@ -648,7 +714,7 @@ export default function App(){
           </div>
         ):(
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
-            {displayList.map(book=><BookCard key={book.id} book={book} css={css} glass={glass} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView} ICONS={ICONS}/>)}
+            {displayList.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
           </div>
         )}
       </div>
