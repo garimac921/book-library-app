@@ -182,7 +182,7 @@ const emptyForm={title:"",author:"",genres:[],status:"Currently Reading",rating:
 const SPINES=["#e11d48","#7c3aed","#2563eb","#059669","#d97706","#0891b2","#9333ea","#b45309"];
 
 // Top-level component — defined outside App to prevent remounting on every keystroke
-const AddEditView=({editMode,addingTo,form,setForm,olResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
+const AddEditView=({editMode,addingTo,form,setForm,olResults,setOlResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
   const inp=(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",...x});
   const sel={width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"};
   const lbl={fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"};
@@ -209,7 +209,7 @@ const AddEditView=({editMode,addingTo,form,setForm,olResults,olSearching,searchO
               <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
                 {olSearching&&<div style={{padding:"0.85rem",color:"rgba(255,255,255,0.6)",fontSize:"0.9rem"}}>Searching...</div>}
                 {olResults.map((b,i)=>(
-                  <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));}}
+                  <div key={i} onMouseDown={e=>{e.preventDefault();setForm(f=>({...f,title:b.title,author:b.author,cover_url:b.cover_url_large,pages:String(b.pages||"")}));setOlResults([]);}}
                     style={{display:"flex",gap:"0.75rem",padding:"0.65rem 0.9rem",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.1)",alignItems:"center"}}
                     onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.08)"}
                     onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
@@ -480,7 +480,7 @@ export default function App(){
         <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.4rem"}}>{editMode?"Edit Book":`Add to ${addingTo==="nextup"?"Next-Up":"Bookshelf"}`}</h2>
         <AddEditView
           editMode={editMode} addingTo={addingTo} form={form} setForm={setForm}
-          olResults={olResults} olSearching={olSearching} searchOL={searchOL}
+          olResults={olResults} setOlResults={setOlResults} olSearching={olSearching} searchOL={searchOL}
           autoFill={autoFill} aiLoading={aiLoading} fillStep={fillStep}
           allGenres={allGenres} colorMap={colorMap} iconMap={iconMap}
           manualCover={manualCover} setManualCover={setManualCover}
