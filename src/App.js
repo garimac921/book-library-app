@@ -202,7 +202,7 @@ const AddEditView=({editMode,addingTo,form,setForm,olResults,setOlResults,olSear
                 const v=e.target.value;
                 setForm(f=>({...f,title:v}));
                 clearTimeout(debRef.current);
-                debRef.current=setTimeout(()=>searchOL(v),500);
+                debRef.current=setTimeout(()=>searchOL(v),250);
               }}
             />
             {(olResults.length>0||olSearching)&&(
@@ -220,9 +220,7 @@ const AddEditView=({editMode,addingTo,form,setForm,olResults,setOlResults,olSear
               </div>
             )}
           </div>
-          <button style={btn("rgba(255,255,255,0.2)","#fff")} onClick={autoFill} disabled={aiLoading}>
-            <SvgIcon path={ICONS.sparkle} size={14} color="#fff"/>{aiLoading?(fillStep||"Filling..."):"Auto-fill"}
-          </button>
+
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
@@ -356,7 +354,7 @@ export default function App(){
     if(!q.trim()||q.length<2){setOlResults([]);return;}
     setOlSearching(true);
     try{
-      const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=6&fields=title,author_name,cover_i,number_of_pages_median`);
+      const r=await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=5&fields=title,author_name,cover_i,number_of_pages_median`);
       const d=await r.json();
       const mapped=(d.docs||[]).map(b=>({title:b.title,author:b.author_name?.[0]||"Unknown",pages:b.number_of_pages_median||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:"",cover_url_large:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:""}));
       setOlResults(mapped);
