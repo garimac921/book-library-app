@@ -328,7 +328,7 @@ export default function App(){
     setCustomGenres(loadArr(CGKEY));
   },[]);
 
-  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
+  
   const updBooks=b=>{setBooks(b);sv(BKEY,b);};
   const updTheme=t=>{setTheme(t);sv(TKEY,t);};
   const updUser=u=>{setUser(u);sv(UKEY,u);};
