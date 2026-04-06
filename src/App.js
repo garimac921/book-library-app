@@ -361,9 +361,9 @@ export default function App(){
       setAuthUser(session?.user??null);
       setAuthLoading(false);
     });
-    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((event,session)=>{
       setAuthUser(session?.user??null);
-      if(!session){setBooks([]);setTheme(DEFAULTS);setUser({name:""});setShowOnboard(false);}
+      if(event==="SIGNED_OUT"){setBooks([]);setTheme(DEFAULTS);setUser({name:""});setShowOnboard(false);}
     });
     return()=>subscription.unsubscribe();
   },[]);
@@ -375,26 +375,29 @@ export default function App(){
     return()=>window.removeEventListener("scroll",onScroll);
   },[]);
 
-  // Data loader
+  // Data loader — only runs once when authUser is set
   useEffect(()=>{
     if(!authUser) return;
+    let cancelled=false;
     const init=async()=>{
       const{data:booksData}=await supabase.from("books").select("*").eq("user_id",authUser.id).order("created_at",{ascending:false});
+      if(cancelled) return;
       if(booksData) setBooks(booksData.map(b=>({...b,genres:b.genres||[],spineColor:b.spine_color})));
       const{data:settingsData}=await supabase.from("settings").select("*").eq("user_id",authUser.id);
+      if(cancelled) return;
       if(settingsData&&settingsData.length>0){
         const m=Object.fromEntries(settingsData.map(s=>[s.key,s.value]));
         if(m.theme) setTheme({...DEFAULTS,...m.theme});
-        if(m.user&&m.user.name){setUser(m.user);}
-        else if(m.user&&!m.user.name){setUser(m.user);setShowOnboard(true);}
-        else setShowOnboard(true);
         if(m.genreIcons) setGenreIcons(m.genreIcons);
         if(m.genreColors) setGenreColors(m.genreColors);
         if(m.customGenres) setCustomGenres(m.customGenres);
+        if(m.user&&m.user.name) setUser(m.user);
+        else{setUser(m.user||{name:""});setShowOnboard(true);}
       } else setShowOnboard(true);
     };
     init();
-  },[authUser]);
+    return()=>{cancelled=true;};
+  },[authUser?.id]);
 
   // ── NOW safe to do early returns ──
   if(authLoading) return(
