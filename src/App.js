@@ -6,56 +6,6 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
-const AuthScreen=({onAuth})=>{
-  const [mode,setMode]=useState("login");
-  const [email,setEmail]=useState("");
-  const [password,setPassword]=useState("");
-  const [loading,setLoading]=useState(false);
-  const [error,setError]=useState("");
-  const [success,setSuccess]=useState("");
-
-  const handle=async()=>{
-    setError("");setSuccess("");setLoading(true);
-    if(mode==="login"){
-      const{error:e}=await supabase.auth.signInWithPassword({email,password});
-      if(e)setError(e.message);
-    } else if(mode==="signup"){
-      const{error:e}=await supabase.auth.signUp({email,password});
-      if(e)setError(e.message);
-      else setSuccess("Check your email to confirm your account, then log in!");
-    } else {
-      const{error:e}=await supabase.auth.resetPasswordForEmail(email);
-      if(e)setError(e.message);
-      else setSuccess("Password reset email sent!");
-    }
-    setLoading(false);
-  };
-
-  return(
-    <div style={{fontFamily:"'Segoe UI',sans-serif",minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{...glass({borderRadius:"28px"}),maxWidth:"420px",width:"90%",padding:"3rem",textAlign:"center"}}>
-        <SvgIcon path={ICONS.book} size={44} color="#c084fc"/>
-        <h2 style={{margin:"1rem 0 0.3rem",fontWeight:800,fontSize:"1.8rem",color:"#fff"}}>My Book Library</h2>
-        <p style={{color:"rgba(255,255,255,0.55)",marginBottom:"2rem",fontSize:"0.95rem"}}>
-          {mode==="login"?"Sign in to your library":mode==="signup"?"Create your library":"Reset your password"}
-        </p>
-        {error&&<div style={{background:"rgba(239,68,68,0.2)",border:"1px solid rgba(239,68,68,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#fca5a5",fontSize:"0.88rem"}}>{error}</div>}
-        {success&&<div style={{background:"rgba(16,185,129,0.2)",border:"1px solid rgba(16,185,129,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#6ee7b7",fontSize:"0.88rem"}}>{success}</div>}
-        <input style={{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",marginBottom:"0.75rem"}} placeholder="Email address" type="email" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>
-        {mode!=="reset"&&<input style={{width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",marginBottom:"1.25rem"}} placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>}
-        <button style={{width:"100%",padding:"0.85rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"1rem",background:"rgba(255,255,255,0.95)",color:"#7c3aed",boxShadow:"0 4px 16px rgba(0,0,0,0.25)",marginBottom:"1.25rem"}} onClick={handle} disabled={loading}>
-          {loading?"...":{login:"Sign In",signup:"Create Account",reset:"Send Reset Email"}[mode]}
-        </button>
-        <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
-          {mode==="login"&&<><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("signup");setError("");setSuccess("");}}>Don't have an account? Sign up</button><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"0.82rem"}} onClick={()=>{setMode("reset");setError("");setSuccess("");}}>Forgot password?</button></>}
-          {mode==="signup"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Already have an account? Sign in</button>}
-          {mode==="reset"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Back to sign in</button>}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const BUILT_IN_GENRES = [
   "Fiction","Non-Fiction","Fantasy","High Fantasy","Dark Fantasy","Romantasy",
   "Sci-Fi","Mystery","Thriller","Horror","Gothic Horror","Dark Gothic Romance",
@@ -137,7 +87,6 @@ const GenreIcon=({genre,iconMap,colorMap,size=12})=>{
 const ICONS={
   book:"M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z",
   bookmark:"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z",
-  sparkle:"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
   settings:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
   chart:"M18 20V10M12 20V4M6 20v-6M2 20h20",
   shelves:"M2 3h20v4H2zM2 10h20v4H2zM2 17h20v4H2z",
@@ -229,7 +178,58 @@ const LineChart=({data,color})=>{
 
 const emptyForm={title:"",author:"",genres:[],status:"Currently Reading",rating:0,notes:"",date_read:"",cover_url:"",pages:""};
 
-const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,searchOL,autoFill,aiLoading,fillStep,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
+// ── AUTH SCREEN ──
+const AuthScreen=()=>{
+  const [mode,setMode]=useState("login");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState("");
+  const [success,setSuccess]=useState("");
+  const inp={width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",marginBottom:"0.75rem"};
+  const handle=async()=>{
+    setError("");setSuccess("");setLoading(true);
+    if(mode==="login"){
+      const{error:e}=await supabase.auth.signInWithPassword({email,password});
+      if(e)setError(e.message);
+    } else if(mode==="signup"){
+      const{error:e}=await supabase.auth.signUp({email,password});
+      if(e)setError(e.message);
+      else setSuccess("Check your email to confirm your account, then log in!");
+    } else {
+      const{error:e}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});
+      if(e)setError(e.message);
+      else setSuccess("Password reset email sent!");
+    }
+    setLoading(false);
+  };
+  return(
+    <div style={{fontFamily:"'Segoe UI',sans-serif",minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{...glass({borderRadius:"28px"}),maxWidth:"420px",width:"90%",padding:"3rem",textAlign:"center"}}>
+        <SvgIcon path={ICONS.book} size={44} color="#c084fc"/>
+        <h2 style={{margin:"1rem 0 0.3rem",fontWeight:800,fontSize:"1.8rem",color:"#fff"}}>My Book Library</h2>
+        <p style={{color:"rgba(255,255,255,0.55)",marginBottom:"2rem",fontSize:"0.95rem"}}>
+          {mode==="login"?"Sign in to your library":mode==="signup"?"Create your library":"Reset your password"}
+        </p>
+        {error&&<div style={{background:"rgba(239,68,68,0.2)",border:"1px solid rgba(239,68,68,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#fca5a5",fontSize:"0.88rem"}}>{error}</div>}
+        {success&&<div style={{background:"rgba(16,185,129,0.2)",border:"1px solid rgba(16,185,129,0.4)",borderRadius:"10px",padding:"0.75rem",marginBottom:"1rem",color:"#6ee7b7",fontSize:"0.88rem"}}>{success}</div>}
+        <input style={inp} placeholder="Email address" type="email" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>
+        {mode!=="reset"&&<input style={inp} placeholder="Password (min 6 chars)" type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handle()}/>}
+        <button style={{width:"100%",padding:"0.85rem",borderRadius:"999px",border:"none",cursor:"pointer",fontWeight:700,fontSize:"1rem",background:"rgba(255,255,255,0.95)",color:"#7c3aed",boxShadow:"0 4px 16px rgba(0,0,0,0.25)",marginBottom:"1.25rem",marginTop:"0.25rem"}} onClick={handle} disabled={loading}>
+          {loading?"...":{login:"Sign In",signup:"Create Account",reset:"Send Reset Email"}[mode]}
+        </button>
+        <div style={{display:"flex",flexDirection:"column",gap:"0.5rem"}}>
+          {mode==="login"&&<><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("signup");setError("");setSuccess("");}}>Don't have an account? Sign up</button><button style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"0.82rem"}} onClick={()=>{setMode("reset");setError("");setSuccess("");}}>Forgot password?</button></>}
+          {mode==="signup"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Already have an account? Sign in</button>}
+          {mode==="reset"&&<button style={{background:"none",border:"none",color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:"0.88rem"}} onClick={()=>{setMode("login");setError("");setSuccess("");}}>Back to sign in</button>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── ADD/EDIT (top-level to prevent focus loss) ──
+const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,searchOL,allGenres,colorMap,iconMap,manualCover,setManualCover,saveBook,onBack,STATUSES,debRef})=>{
   const inp=(x={})=>({width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:"0.95rem",boxSizing:"border-box",outline:"none",...x});
   const sel={width:"100%",padding:"0.75rem 1rem",borderRadius:"12px",border:"1.5px solid rgba(255,255,255,0.2)",background:"rgba(30,20,60,0.5)",color:"#fff",fontSize:"0.95rem"};
   const lbl={fontSize:"0.75rem",color:"rgba(255,255,255,0.6)",marginBottom:"0.4rem",display:"block",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"};
@@ -240,7 +240,7 @@ const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,sea
       <div style={{marginBottom:"1.25rem"}}>
         <label style={lbl}>Book Title</label>
         <div style={{position:"relative"}} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOlResults([]);}}>
-          <input style={inp()} placeholder="Search for a book, or type manually..." value={form.title}
+          <input style={inp()} placeholder="Search or type a title manually..." value={form.title}
             onChange={e=>{const v=e.target.value;setForm(f=>({...f,title:v}));clearTimeout(debRef.current);debRef.current=setTimeout(()=>searchOL(v),250);}}/>
           {(olResults.length>0||olSearching)&&(
             <div style={{position:"absolute",top:"100%",left:0,right:0,...glass({borderRadius:"16px"}),zIndex:50,maxHeight:"280px",overflowY:"auto",marginTop:"8px"}}>
@@ -291,6 +291,7 @@ const AddEditView=({editMode,form,setForm,olResults,setOlResults,olSearching,sea
   );
 };
 
+// ── BOOK CARD (top-level) ──
 const BookCard=({book,iconMap,colorMap,markFinished,setSelected,setAiResult,setView})=>{
   const isReading=book.status==="Currently Reading";
   return(
@@ -322,7 +323,11 @@ const BookCard=({book,iconMap,colorMap,markFinished,setSelected,setAiResult,setV
   );
 };
 
+// ── MAIN APP ──
 export default function App(){
+  // ── ALL HOOKS FIRST — no early returns before this block ──
+  const [authUser,setAuthUser]=useState(null);
+  const [authLoading,setAuthLoading]=useState(true);
   const [books,setBooks]=useState([]);
   const [theme,setTheme]=useState(DEFAULTS);
   const [user,setUser]=useState({name:""});
@@ -334,8 +339,6 @@ export default function App(){
   const [selected,setSelected]=useState(null);
   const [fSearch,setFSearch]=useState("");
   const [fGenre,setFGenre]=useState("All");
-  const [aiLoading,setAiLoading]=useState(false);
-  const [fillStep,setFillStep]=useState("");
   const [aiResult,setAiResult]=useState("");
   const [toast,setToast]=useState({msg:"",type:"success"});
   const [editMode,setEditMode]=useState(false);
@@ -346,14 +349,13 @@ export default function App(){
   const [showOnboard,setShowOnboard]=useState(false);
   const [onboardName,setOnboardName]=useState("");
   const [statPeriod,setStatPeriod]=useState("month");
+  const [statsFilter,setStatsFilter]=useState("all");
   const [newGenreName,setNewGenreName]=useState("");
   const [newGenreColor,setNewGenreColor]=useState("#c084fc");
-  const [authUser,setAuthUser]=useState(null);
-  const [authLoading,setAuthLoading]=useState(true);
   const [showScrollTop,setShowScrollTop]=useState(false);
-  const [statsFilter,setStatsFilter]=useState("all");
   const debRef=useRef(null);
 
+  // Auth listener
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{
       setAuthUser(session?.user??null);
@@ -361,22 +363,25 @@ export default function App(){
     });
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
       setAuthUser(session?.user??null);
+      if(!session) { setBooks([]); setTheme(DEFAULTS); setUser({name:""}); }
     });
     return()=>subscription.unsubscribe();
   },[]);
 
-  if(authLoading) return <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:"1.1rem",fontFamily:"'Segoe UI',sans-serif"}}>Loading...</div>;
-  if(!authUser) return <AuthScreen/>;
+  // Scroll listener
+  useEffect(()=>{
+    const onScroll=()=>setShowScrollTop(window.scrollY>400);
+    window.addEventListener("scroll",onScroll);
+    return()=>window.removeEventListener("scroll",onScroll);
+  },[]);
 
-  const signOut=()=>supabase.auth.signOut();
-  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
-
+  // Data loader
   useEffect(()=>{
     if(!authUser) return;
     const init=async()=>{
-      const {data:booksData}=await supabase.from("books").select("*").eq("user_id",authUser.id).order("created_at",{ascending:false});
+      const{data:booksData}=await supabase.from("books").select("*").eq("user_id",authUser.id).order("created_at",{ascending:false});
       if(booksData) setBooks(booksData.map(b=>({...b,genres:b.genres||[],spineColor:b.spine_color})));
-      const {data:settingsData}=await supabase.from("settings").select("*").eq("user_id",authUser.id);
+      const{data:settingsData}=await supabase.from("settings").select("*").eq("user_id",authUser.id);
       if(settingsData&&settingsData.length>0){
         const m=Object.fromEntries(settingsData.map(s=>[s.key,s.value]));
         if(m.theme) setTheme({...DEFAULTS,...m.theme});
@@ -389,6 +394,16 @@ export default function App(){
     init();
   },[authUser]);
 
+  // ── NOW safe to do early returns ──
+  if(authLoading) return(
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#3b4fd8 0%,#a855f7 100%)",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:"1.1rem",fontFamily:"'Segoe UI',sans-serif"}}>
+      Loading...
+    </div>
+  );
+  if(!authUser) return <AuthScreen/>;
+
+  const showToast=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast({msg:"",type:"success"}),3000);};
+  const signOut=()=>supabase.auth.signOut();
   const saveSetting=async(key,value)=>{await supabase.from("settings").upsert({key,value,user_id:authUser.id});};
   const updTheme=t=>{setTheme(t);saveSetting("theme",t);};
   const updUser=u=>{setUser(u);saveSetting("user",u);};
@@ -401,8 +416,18 @@ export default function App(){
   const iconMap={...DEFAULT_GENRE_ICONS,...genreIcons};
   const colorMap={...DEFAULT_GENRE_COLORS,...genreColors};
 
+  const upsertBook=async book=>{
+    await supabase.from("books").upsert({
+      id:book.id,title:book.title,author:book.author,genres:book.genres,
+      status:book.status,rating:book.rating||null,notes:book.notes,
+      date_read:book.date_read||null,cover_url:book.cover_url,
+      pages:book.pages?parseInt(book.pages):null,
+      spine_color:book.spineColor,created_at:book.created_at,user_id:authUser.id
+    });
+  };
+
   const css={
-    app:{fontFamily:T.fontFamily,minHeight:"100vh",background:`linear-gradient(135deg, ${T.bgFrom} 0%, ${T.bgTo} 100%)`,color:T.textColor,position:"relative"},
+    app:{fontFamily:T.fontFamily,minHeight:"100vh",background:`linear-gradient(135deg,${T.bgFrom} 0%,${T.bgTo} 100%)`,color:T.textColor,position:"relative"},
     hdr:{...glass({borderRadius:0,borderLeft:"none",borderRight:"none",borderTop:"none"}),padding:"0 2.5rem",height:"72px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100},
     logo:{fontSize:"1.5rem",fontWeight:800,color:"#fff",letterSpacing:"-0.5px",textShadow:"0 2px 12px rgba(0,0,0,0.3)"},
     pill:(a)=>({display:"inline-flex",alignItems:"center",gap:"6px",padding:"0.55rem 1.3rem",borderRadius:"999px",border:a?"none":"1.5px solid rgba(255,255,255,0.3)",cursor:"pointer",fontWeight:700,fontSize:"0.88rem",background:a?"rgba(255,255,255,0.95)":"rgba(255,255,255,0.1)",color:a?"#7c3aed":"rgba(255,255,255,0.85)",transition:"all 0.18s",boxShadow:a?"0 4px 16px rgba(0,0,0,0.25)":"none",transform:a?"translateY(-1px)":"none"}),
@@ -416,6 +441,10 @@ export default function App(){
     aiBox:{...glass({borderRadius:"16px"}),padding:"1.5rem",marginTop:"1.25rem",lineHeight:1.8,whiteSpace:"pre-wrap",fontSize:"0.95rem"},
   };
 
+  const scrollBtn=showScrollTop&&(
+    <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{position:"fixed",bottom:"2rem",right:"2rem",zIndex:200,width:"44px",height:"44px",borderRadius:"50%",background:"rgba(255,255,255,0.2)",backdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:"1.2rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.3)"}}>↑</button>
+  );
+
   const searchOL=async q=>{
     if(!q.trim()||q.length<2){setOlResults([]);return;}
     setOlSearching(true);
@@ -427,29 +456,13 @@ export default function App(){
     setOlSearching(false);
   };
 
-  const autoFill=async()=>{
-    if(!form.title.trim())return showToast("Enter a title first!","error");
-    setAiLoading(true);setFillStep("Searching...");
-    try{
-      const[olData,aiRes]=await Promise.all([
-        fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(form.title)}&limit=1&fields=title,author_name,cover_i,number_of_pages_median`).then(r=>r.json()).then(d=>{const b=d.docs?.[0];if(!b)return null;return{author:b.author_name?.[0]||"",cover_url:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg`:"",pages:b.number_of_pages_median||""};}),
-        fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":process.env.REACT_APP_ANTHROPIC_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:`Return ONLY raw JSON: genre (one of: ${allGenres.join(",")}), notes (2-sentence summary). No markdown.`,messages:[{role:"user",content:`Book: "${form.title}"${form.author?`, by "${form.author}"`:""}` }]})}).then(r=>r.json()).then(d=>d.content?.[0]?.text||"")
-      ]);
-      if(olData){setForm(f=>({...f,...olData,title:form.title}));setFillStep("Cover found!");}
-      const aiData=JSON.parse(aiRes.replace(/```json|```/g,"").trim());
-      setForm(f=>({...f,...(olData||{}),...aiData,genres:aiData.genre?[aiData.genre]:f.genres,title:form.title}));
-      showToast("Details filled in!");
-    }catch{showToast("Couldn't auto-fill.","error");}
-    setAiLoading(false);setFillStep("");
-  };
-
   const saveBook=async()=>{
     if(!form.title.trim())return showToast("Title is required!","error");
     const isEdit=editMode&&selected;
     const book={...form,id:isEdit?selected.id:Date.now().toString(),created_at:isEdit?selected.created_at:new Date().toISOString(),spineColor:isEdit?selected.spineColor:SPINES[Math.floor(Math.random()*SPINES.length)]};
     if(isEdit){setBooks(books.map(b=>b.id===book.id?book:b));setSelected(book);showToast("Updated!");setView("detail");setEditMode(false);setForm(emptyForm);}
     else{setBooks([book,...books]);showToast("Book added!");setForm(emptyForm);setView(addingTo);}
-    await supabase.from("books").upsert({id:book.id,title:book.title,author:book.author,genres:book.genres,status:book.status,rating:book.rating||null,notes:book.notes,date_read:book.date_read||null,cover_url:book.cover_url,pages:book.pages?parseInt(book.pages):null,spine_color:book.spineColor,created_at:book.created_at,user_id:authUser.id});
+    await upsertBook(book);
   };
 
   const markFinished=async book=>{
@@ -457,7 +470,7 @@ export default function App(){
     const updated={...book,status:"Finished",date_read:book.date_read||today};
     setBooks(books.map(b=>b.id===book.id?updated:b));
     showToast(`"${book.title}" marked as finished!`);
-    await supabase.from("books").upsert({id:updated.id,title:updated.title,author:updated.author,genres:updated.genres,status:updated.status,rating:updated.rating||null,notes:updated.notes,date_read:updated.date_read||null,cover_url:updated.cover_url,pages:updated.pages?parseInt(updated.pages):null,spine_color:updated.spineColor,created_at:updated.created_at,user_id:authUser.id});
+    await upsertBook(updated);
   };
 
   const deleteBook=async id=>{
@@ -477,22 +490,21 @@ export default function App(){
     setNewGenreName("");showToast(`Added "${name}"!`);
   };
 
-  useEffect(()=>{
-    const onScroll=()=>setShowScrollTop(window.scrollY>400);
-    window.addEventListener("scroll",onScroll);
-    return()=>window.removeEventListener("scroll",onScroll);
-  },[]);
+  const finished=books.filter(b=>b.status==="Finished").sort((a,b)=>{
+    const da=a.date_read?new Date(a.date_read):new Date(a.created_at);
+    const db=b.date_read?new Date(b.date_read):new Date(b.created_at);
+    return db-da;
+  });
   const reading=books.filter(b=>b.status==="Currently Reading");
   const nextUp=books.filter(b=>b.status==="Want to Read");
-  const totalPages=finished.reduce((a,b)=>a+(parseInt(b.pages)||0),0);
-  const avgRating=finished.filter(b=>b.rating>0).length?(finished.filter(b=>b.rating>0).reduce((a,b)=>a+b.rating,0)/finished.filter(b=>b.rating>0).length).toFixed(1):"—";
-  const genreCounts={};books.forEach(b=>(b.genres||[]).forEach(g=>{genreCounts[g]=(genreCounts[g]||0)+1;}));
-  const topGenres=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const now=new Date();
   const thisMonth=finished.filter(b=>b.date_read&&new Date(b.date_read).getMonth()===now.getMonth()&&new Date(b.date_read).getFullYear()===now.getFullYear()).length;
+  const genreCounts={};books.forEach(b=>(b.genres||[]).forEach(g=>{genreCounts[g]=(genreCounts[g]||0)+1;}));
+  const topGenres=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
   const getMonthlyData=()=>Array.from({length:6},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth()-5+i,1);return{label:d.toLocaleString("default",{month:"short"}),value:finished.filter(b=>{if(!b.date_read)return false;const bd=new Date(b.date_read);return bd.getMonth()===d.getMonth()&&bd.getFullYear()===d.getFullYear();}).length};});
   const getYearlyData=()=>Array.from({length:5},(_,i)=>{const y=now.getFullYear()-4+i;return{label:String(y),value:finished.filter(b=>b.date_read&&new Date(b.date_read).getFullYear()===y).length};});
+
   const applyFilters=list=>list.filter(b=>{
     if(fGenre!=="All"&&!(b.genres||[]).includes(fGenre))return false;
     if(fSearch&&!b.title.toLowerCase().includes(fSearch.toLowerCase())&&!b.author?.toLowerCase().includes(fSearch.toLowerCase()))return false;
@@ -520,10 +532,11 @@ export default function App(){
       <span style={css.logo}>{user.name?`${user.name}'s Library`:"My Library"}</span>
       {backTo
         ?<button style={css.pill(false)} onClick={()=>{setView(backTo);setAiResult("");}}><SvgIcon path={ICONS.back} size={14} color="rgba(255,255,255,0.85)"/>Back</button>
-        :<div style={{display:"flex",alignItems:"center",gap:"8px"}}><NavTabs/><button style={{...css.pill(false),fontSize:"0.78rem",padding:"0.4rem 0.85rem"}} onClick={signOut}>Sign Out</button></div>}
+        :<div style={{display:"flex",alignItems:"center",gap:"8px"}}><NavTabs/><button style={{...css.pill(false),fontSize:"0.78rem",padding:"0.4rem 0.85rem",opacity:0.6}} onClick={signOut}>Sign Out</button></div>}
     </div>
   );
 
+  // ── ONBOARD ──
   if(showOnboard)return(
     <div style={{...css.app,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh"}}>
       <div style={{...glass({borderRadius:"28px"}),maxWidth:"440px",width:"90%",padding:"3.5rem",textAlign:"center"}}>
@@ -536,17 +549,19 @@ export default function App(){
     </div>
   );
 
+  // ── ADD/EDIT ──
   if(view==="add"||(view==="detail"&&editMode))return(
     <div style={css.app}>
       {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
       <Hdr backTo={editMode?"detail":addingTo}/>
       <div style={css.main}>
         <h2 style={{fontWeight:800,marginBottom:"1.5rem",fontSize:"1.4rem"}}>{editMode?"Edit Book":`Add to ${addingTo==="nextup"?"Next-Up":"Bookshelf"}`}</h2>
-        <AddEditView editMode={editMode} form={form} setForm={setForm} olResults={olResults} setOlResults={setOlResults} olSearching={olSearching} searchOL={searchOL} autoFill={autoFill} aiLoading={aiLoading} fillStep={fillStep} allGenres={allGenres} colorMap={colorMap} iconMap={iconMap} manualCover={manualCover} setManualCover={setManualCover} saveBook={saveBook} STATUSES={STATUSES} debRef={debRef} onBack={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}/>
+        <AddEditView editMode={editMode} form={form} setForm={setForm} olResults={olResults} setOlResults={setOlResults} olSearching={olSearching} searchOL={searchOL} allGenres={allGenres} colorMap={colorMap} iconMap={iconMap} manualCover={manualCover} setManualCover={setManualCover} saveBook={saveBook} STATUSES={STATUSES} debRef={debRef} onBack={()=>{setView(editMode?"detail":addingTo);setEditMode(false);setForm(emptyForm);}}/>
       </div>
     </div>
   );
 
+  // ── DETAIL ──
   if(view==="detail"&&selected){
     const book=books.find(b=>b.id===selected.id)||selected;
     const backTo=book.status==="Want to Read"?"nextup":book.status==="Finished"?"finished":"bookshelf";
@@ -593,11 +608,13 @@ export default function App(){
     );
   }
 
+  // ── FINISHED ──
   if(view==="finished"){
     const displayFinished=applyFilters(finished);
     return(
       <div style={css.app}>
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
+        {scrollBtn}
         <Hdr/>
         <div style={css.main}>
           <h2 style={{fontWeight:800,margin:"0 0 0.3rem",fontSize:"1.6rem"}}>Finished</h2>
@@ -618,21 +635,23 @@ export default function App(){
     );
   }
 
+  // ── STATS ──
   if(view==="stats"){
     const chartData=statPeriod==="month"?getMonthlyData():getYearlyData();
     const filteredFinished=statsFilter==="all"?finished:finished.filter(b=>b.rating>=(parseInt(statsFilter)));
     const donutData=Object.entries(filteredFinished.reduce((acc,b)=>{(b.genres||[]).forEach(g=>{acc[g]=(acc[g]||0)+1;});return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([g,c])=>({label:g,value:c,color:colorMap[g]||DEFAULT_GENRE_COLORS[g]||"#94a3b8"}));
     const mostRecent=finished[0];
+    const avgRating=filteredFinished.filter(b=>b.rating>0).length?(filteredFinished.filter(b=>b.rating>0).reduce((a,b)=>a+b.rating,0)/filteredFinished.filter(b=>b.rating>0).length).toFixed(1):"—";
     return(
       <div style={css.app}>
         {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
-        {showScrollTop&&<button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{position:"fixed",bottom:"2rem",right:"2rem",zIndex:200,width:"44px",height:"44px",borderRadius:"50%",background:"rgba(255,255,255,0.2)",backdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:"1.2rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.3)"}}>↑</button>}
+        {scrollBtn}
         <Hdr/>
         <div style={css.main}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
             <h2 style={{fontWeight:800,fontSize:"1.6rem",margin:0}}>Reading Stats</h2>
             <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
-              <span style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.5)"}}>Filter by rating:</span>
+              <span style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.5)"}}>Filter:</span>
               <select style={{...css.sel,width:"auto",fontSize:"0.85rem",padding:"0.4rem 0.75rem"}} value={statsFilter} onChange={e=>setStatsFilter(e.target.value)}>
                 <option value="all">All books</option>
                 <option value="5">★★★★★ only</option>
@@ -642,7 +661,7 @@ export default function App(){
             </div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:"14px",marginBottom:"1.5rem"}}>
-            {[["Books Finished",filteredFinished.length,T.statFinishedColor],["Pages Read",filteredFinished.reduce((a,b)=>a+(parseInt(b.pages)||0),0).toLocaleString(),T.accentColor],["Avg Rating",filteredFinished.filter(b=>b.rating>0).length?(filteredFinished.filter(b=>b.rating>0).reduce((a,b)=>a+b.rating,0)/filteredFinished.filter(b=>b.rating>0).length).toFixed(1):"—","#fbbf24"],["This Month",thisMonth,T.statReadingColor],["Reading Now",reading.length,T.statReadingColor]].map(([label,val,color])=>(
+            {[["Books Finished",filteredFinished.length,T.statFinishedColor],["Pages Read",filteredFinished.reduce((a,b)=>a+(parseInt(b.pages)||0),0).toLocaleString(),T.accentColor],["Avg Rating",avgRating,"#fbbf24"],["This Month",thisMonth,T.statReadingColor],["Reading Now",reading.length,T.statReadingColor]].map(([label,val,color])=>(
               <div key={label} style={{...glass({borderRadius:"20px"}),padding:"1.5rem",position:"relative",overflow:"hidden",textAlign:"center"}}>
                 <div style={{position:"absolute",top:"-20px",right:"-20px",width:"80px",height:"80px",borderRadius:"50%",background:color,opacity:0.15}}/>
                 <div style={{fontSize:"2.5rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 20px ${color}80`}}>{val}</div>
@@ -652,9 +671,7 @@ export default function App(){
           </div>
           {mostRecent&&(
             <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem",marginBottom:"1.25rem",display:"flex",gap:"1.5rem",alignItems:"center",cursor:"pointer"}} onClick={()=>{setSelected(mostRecent);setView("detail");}}>
-              {mostRecent.cover_url
-                ?<img src={mostRecent.cover_url} alt="cover" style={{width:"70px",height:"100px",objectFit:"cover",borderRadius:"10px",boxShadow:"0 4px 16px rgba(0,0,0,0.4)",flexShrink:0}} onError={e=>e.target.style.display="none"}/>
-                :<div style={{width:"70px",height:"100px",background:mostRecent.spineColor||"#7c3aed",borderRadius:"10px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={28} color="rgba(255,255,255,0.5)"/></div>}
+              {mostRecent.cover_url?<img src={mostRecent.cover_url} alt="cover" style={{width:"70px",height:"100px",objectFit:"cover",borderRadius:"10px",boxShadow:"0 4px 16px rgba(0,0,0,0.4)",flexShrink:0}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"70px",height:"100px",background:mostRecent.spineColor||"#7c3aed",borderRadius:"10px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}><SvgIcon path={ICONS.book} size={28} color="rgba(255,255,255,0.5)"/></div>}
               <div>
                 <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.45)",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"0.3rem"}}>Most Recently Completed</div>
                 <div style={{fontWeight:800,fontSize:"1.1rem",marginBottom:"0.2rem"}}>{mostRecent.title}</div>
@@ -680,7 +697,7 @@ export default function App(){
             </div>
           </div>
           <div style={{...glass({borderRadius:"20px"}),padding:"1.5rem"}}>
-            <h3 style={{margin:"0 0 1.25rem",fontWeight:700,fontSize:"1rem"}}>Genre Breakdown {statsFilter!=="all"&&<span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.4)",fontWeight:400}}>({statsFilter}+ stars)</span>}</h3>
+            <h3 style={{margin:"0 0 1.25rem",fontWeight:700,fontSize:"1rem"}}>Genre Breakdown{statsFilter!=="all"&&<span style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.4)",fontWeight:400,marginLeft:"0.5rem"}}>({statsFilter}+ stars)</span>}</h3>
             {donutData.length>0?<DonutChart data={donutData}/>:<div style={{textAlign:"center",color:"rgba(255,255,255,0.4)",fontSize:"0.9rem",padding:"1rem 0"}}>Not enough data collected</div>}
           </div>
         </div>
@@ -688,6 +705,7 @@ export default function App(){
     );
   }
 
+  // ── SETTINGS ──
   if(view==="settings"){
     const colorFields=[["bgFrom","Gradient Start"],["bgTo","Gradient End"],["accentColor","Accent"],["textColor","Text"],["mutedColor","Muted Text"],["statFinishedColor","Finished Stat"],["statReadingColor","Reading Stat"],["statTotalColor","Total Stat"]];
     return(
@@ -756,22 +774,21 @@ export default function App(){
     );
   }
 
+  // ── BOOKSHELF / NEXT-UP ──
   const isNextUp=view==="nextup";
   const displayList=applyFilters(isNextUp?nextUp:reading);
   const displayFinished=applyFilters(finished);
   return(
     <div style={css.app}>
       {toast.msg&&<div style={css.toast(toast.type)}>{toast.msg}</div>}
-      {showScrollTop&&(
-        <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} style={{position:"fixed",bottom:"2rem",right:"2rem",zIndex:200,width:"44px",height:"44px",borderRadius:"50%",background:"rgba(255,255,255,0.2)",backdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:"1.2rem",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(0,0,0,0.3)"}}>↑</button>
-      )}
+      {scrollBtn}
       <Hdr/>
       <div style={css.main}>
         {!isNextUp&&(
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"14px",marginBottom:"2rem"}}>
             {[["Total Books",books.length,T.statTotalColor,"bookshelf"],["Finished",finished.length,T.statFinishedColor,"finished"],["Reading Now",reading.length,T.statReadingColor,"bookshelf"]].map(([label,val,color,linkTo])=>(
               <div key={label} onClick={()=>setView(linkTo)} style={{...glass({borderRadius:"20px"}),padding:"1.75rem 2rem",cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",minHeight:"120px"}}
-                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px ${color}40`;}}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 16px 40px rgba(0,0,0,0.3),0 0 0 1px ${color}40`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow=glass().boxShadow;}}>
                 <div style={{position:"absolute",top:"-30px",right:"-30px",width:"100px",height:"100px",borderRadius:"50%",background:color,opacity:0.12}}/>
                 <div style={{fontSize:"3rem",fontWeight:800,color,lineHeight:1,textShadow:`0 0 24px ${color}80`}}>{val}</div>
@@ -787,24 +804,17 @@ export default function App(){
             <option>All</option>{allGenres.map(g=><option key={g}>{g}</option>)}
           </select>
         </div>
-        {displayList.length===0&&!isNextUp?(
+        {displayList.length===0?(
           <div style={{textAlign:"center",marginTop:"3rem",color:"rgba(255,255,255,0.4)"}}>
             <SvgIcon path={ICONS.book} size={48} color="rgba(255,255,255,0.15)"/>
-            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>Not currently reading anything</p>
-            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:"Currently Reading"});setAddingTo("bookshelf");setView("add");}}>Add a Book</button>
-          </div>
-        ):displayList.length===0&&isNextUp?(
-          <div style={{textAlign:"center",marginTop:"5rem",color:"rgba(255,255,255,0.4)"}}>
-            <SvgIcon path={ICONS.book} size={48} color="rgba(255,255,255,0.15)"/>
-            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>Nothing queued yet</p>
-            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:"Want to Read"});setAddingTo("nextup");setView("add");}}>Add a Book</button>
+            <p style={{marginTop:"1rem",fontSize:"1.05rem"}}>{isNextUp?"Nothing queued yet":"Not currently reading anything"}</p>
+            <button style={{...css.btn("rgba(255,255,255,0.95)","#7c3aed",{marginTop:"0.75rem"})}} onClick={()=>{setForm({...emptyForm,status:isNextUp?"Want to Read":"Currently Reading"});setAddingTo(view);setView("add");}}>Add a Book</button>
           </div>
         ):(
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:"16px"}}>
             {displayList.map(book=><BookCard key={book.id} book={book} iconMap={iconMap} colorMap={colorMap} markFinished={markFinished} setSelected={setSelected} setAiResult={setAiResult} setView={setView}/>)}
           </div>
         )}
-
         {!isNextUp&&displayFinished.length>0&&(
           <div style={{marginTop:"3rem"}}>
             <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"1.5rem"}}>
