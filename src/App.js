@@ -363,7 +363,7 @@ export default function App(){
     });
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
       setAuthUser(session?.user??null);
-      if(!session) { setBooks([]); setTheme(DEFAULTS); setUser({name:""}); }
+      if(!session){setBooks([]);setTheme(DEFAULTS);setUser({name:""});setShowOnboard(false);}
     });
     return()=>subscription.unsubscribe();
   },[]);
@@ -385,7 +385,9 @@ export default function App(){
       if(settingsData&&settingsData.length>0){
         const m=Object.fromEntries(settingsData.map(s=>[s.key,s.value]));
         if(m.theme) setTheme({...DEFAULTS,...m.theme});
-        if(m.user){setUser(m.user);if(!m.user.name)setShowOnboard(true);}else setShowOnboard(true);
+        if(m.user&&m.user.name){setUser(m.user);}
+        else if(m.user&&!m.user.name){setUser(m.user);setShowOnboard(true);}
+        else setShowOnboard(true);
         if(m.genreIcons) setGenreIcons(m.genreIcons);
         if(m.genreColors) setGenreColors(m.genreColors);
         if(m.customGenres) setCustomGenres(m.customGenres);
